@@ -1,7 +1,7 @@
 package com.example.user.service;
 
-import com.example.bankSphere.entity.UserLogger;
-import com.example.bankSphere.repository.UserLoggerRepository;
+import com.example.user.model.UserLogger;
+import com.example.user.repository.UserLoggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

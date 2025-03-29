@@ -30,9 +30,6 @@ public class User {
     @Column(name = "role", nullable = false)
     private ROLE role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Account> accounts;
-
     // KYC status: PENDING, VERIFIED, or REJECTED
     @Column(name = "kycStatus", nullable = false)
     private KYC_STATUS kycStatus;
@@ -88,14 +85,6 @@ public class User {
         this.kycStatus = KYC_STATUS.values()[kycStatus];
     }
 
-    public List<Account> getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(List<Account> accounts) {
-        this.accounts = accounts;
-    }
-
     public KYC_STATUS getKycStatus() {
         return kycStatus;
     }
@@ -108,15 +97,15 @@ public class User {
                 ", \n\"phoneNumber\":" + phoneNumber +
                 ", \n\"role\":" + role +
                 ", \n\"kycStatus\":" + kycStatus +
-                ", \n\"accounts\":[\n" + showAccounts(accounts) + "\n]" +
+//                ", \n\"accounts\":[\n" + showAccounts(accounts) + "\n]" +
                 '}';
     }
 
-    public StringBuilder showAccounts(List<Account> accounts) {
-        StringBuilder sb = new StringBuilder();
-        for (Account account : accounts) {
-            sb.append(account);
-        }
-        return sb;
-    }
+//    public StringBuilder showAccounts(List<Account> accounts) {
+//        StringBuilder sb = new StringBuilder();
+//        for (Account account : accounts) {
+//            sb.append(account);
+//        }
+//        return sb;
+//    }
 }

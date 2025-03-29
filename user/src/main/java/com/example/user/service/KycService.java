@@ -1,7 +1,7 @@
 // service/KycService.java
 package com.example.user.service;
 
-import com.example.bankSphere.dto.UserRequestDto;
+import com.example.user.dto.UserRequestDto;
 import org.springframework.stereotype.Service;
 
 @Service
