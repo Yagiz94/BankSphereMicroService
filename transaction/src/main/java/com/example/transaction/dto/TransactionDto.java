@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 
 public class TransactionDto {
 
+    private Long accountId;
     private BigDecimal amount;
     private TRANSACTION_TYPE type; // e.g., "TRANSFER", "BILL_PAYMENT"
     private LocalDateTime timestamp;
-    private AccountDto account;
 
     // Status: SUCCESS, PENDING, FAILED, etc.
     private String status;
@@ -49,7 +49,11 @@ public class TransactionDto {
         this.status = status;
     }
 
-    public void setAccount(AccountDto accountDto) {
-        this.account = accountDto;
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }
