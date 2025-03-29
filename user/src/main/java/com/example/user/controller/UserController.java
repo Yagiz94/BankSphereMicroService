@@ -140,6 +140,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
+    @GetMapping("/validate/{id}")
+    public ResponseEntity<Boolean> validateUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUser(id) != null);
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers(@RequestHeader("senderID") Long senderId) {
         User user = userService.getUser(senderId);
