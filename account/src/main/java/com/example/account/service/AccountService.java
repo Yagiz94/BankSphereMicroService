@@ -1,17 +1,18 @@
 // service/AccountService.java
 package com.example.account.service;
 
-import com.example.account.dto.TransactionDto;
+import com.example.account.dto.AccountDto;
+import com.example.account.exception.AccountNotFoundException;
 import com.example.account.model.Account;
-import com.example.account.model.Transaction;
-import com.example.account.model.User;
-import com.example.account.exception.UserAccountNotFoundException;
-import com.example.account.exception.UserNotFoundException;
 import com.example.account.repository.AccountRepository;
-import com.example.account.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,83 +23,99 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private RestTemplate restTemplate;
 
-    @Autowired
-    private TransactionService transactionService;
+    @Value("${user.service.url}") // Example: "http://localhost:8081"
+    private String userServiceUrl;
 
     // Method to retrieve account by id and userId
     public Account getAccountById(Long accountId) {
         return accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
     }
 
-    public Account getAccountByUserId(Long userId) {
+    public List<AccountDto> getAllAccounts(Long userId) {
         // Find the user by ID
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User id not found"));
-
-        // Find the account associated with the user
-        return accountRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Account not found for the given user"));
-    }
-
-    public Account createAccount(Account account) {
-        return accountRepository.save(account);
-    }
-
-    public void deleteAccount(Long userId, Long accountId) {
-        // Find the user by ID
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User id not found"));
-
-        // Find the account associated with the user
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-
-        // Check if the account belongs to the user
-        if (account.getUser().getId().equals(userId)) {
-            accountRepository.delete(account);
+        List<AccountDto> accounts = accountRepository.findByUserId(userId).stream().map(account -> {
+            AccountDto accountDto = new AccountDto();
+            accountDto.setAccountId(account.getId());
+            accountDto.setUserId(account.getUserId());
+            accountDto.setBalance(account.getBalance());
+            accountDto.setAccountType(account.getAccountType());
+            return accountDto;
+        }).collect(Collectors.toList());
+        if (accounts.isEmpty()) {
+            throw new AccountNotFoundException("No accounts found for user id: " + userId);
         } else {
-            throw new RuntimeException("Account deletion failed.");
+            return accounts;
         }
     }
 
-    public List<TransactionDto> getAllTransactions(Long userId, Long accountId) {
-        // Find the user by ID
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        // Find the account associated with the user
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new UserAccountNotFoundException("Account not found"));
-
-        // Check if the account belongs to the user
-        if (account.getUser().getId().equals(userId)) {
-            return transactionService.getAllTransactions(account.getId()).stream()
-                    .map(transaction -> {
-                        TransactionDto transactionDto = new TransactionDto();
-                        transactionDto.setType(transaction.getType().getValue());
-                        transactionDto.setTimestamp(transaction.getTimestamp());
-                        transactionDto.setAmount(transaction.getAmount());
-                        transactionDto.setStatus(transaction.getStatus());
-                        return transactionDto;
-                    })
-                    .collect(Collectors.toList());
+    public Account createAccount(AccountDto accountDto) {
+        if (accountDto == null || accountDto.getUserId() == null) {
+            throw new RuntimeException("User ID is required");
+        }
+        if (!isUserValid(accountDto.getUserId())) {
+            throw new RuntimeException("User is invalid");
         } else {
-            throw new UserAccountNotFoundException("Account not found for the user.");
+            Account account = new Account();
+            account.setUserId(accountDto.getUserId());
+            account.setBalance(accountDto.getBalance());
+            account.setAccountType(accountDto.getAccountType().getValue());
+            return accountRepository.save(account);
         }
     }
 
-    public Account retrieveAccount(Long accountId) {
-        return accountRepository.findById(accountId)
-                .orElseThrow(() -> new UserAccountNotFoundException("Account not found."));
+    public void deleteAccount(Long accountId) {
+        // Find the account associated with the user
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        accountRepository.delete(account);
     }
 
-    public void withdraw(Transaction transaction) {
-        transactionService.withdraw(transaction);
+    public boolean isUserValid(Long userId) {
+        try {
+            String url = userServiceUrl + "/api/user/validate/" + userId;
+            ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class);
+            return Boolean.TRUE.equals(response.getBody()); // Ensure proper Boolean handling
+        } catch (Exception e) {
+            return false; // If request fails, assume user is invalid
+        }
     }
 
-    public void deposit(Transaction transaction) {
-        transactionService.deposit(transaction);
+    @Transactional
+    public void deposit(Long accountId, BigDecimal amount, Long requestingUserId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+
+        // Validate ownership: Ensure the account belongs to the user making the request.
+        if (!account.getUserId().equals(requestingUserId)) {
+            throw new RuntimeException("Unauthorized: This account does not belong to the user");
+        }
+
+        // Add the deposit amount to the current balance.
+        account.setBalance(account.getBalance().add(amount));
+        accountRepository.save(account);
+    }
+
+    // Similarly, for withdrawal:
+    @Transactional
+    public void withdraw(Long accountId, BigDecimal amount, Long requestingUserId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        // Validate ownership.
+        if (!account.getUserId().equals(requestingUserId)) {
+            throw new RuntimeException("Unauthorized: This account does not belong to the user");
+        }
+
+        // Check if sufficient balance exists.
+        if (account.getBalance().compareTo(amount) < 0) {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        // Deduct the amount.
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
     }
 }

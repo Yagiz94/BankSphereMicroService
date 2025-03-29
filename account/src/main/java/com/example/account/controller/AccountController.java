@@ -1,6 +1,8 @@
 // controller/AccountController.java
 package com.example.account.controller;
 
+import com.example.account.dto.AccountDto;
+import com.example.account.model.Account;
 import com.example.account.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -18,136 +18,82 @@ public class AccountController {
 
     @Autowired
     private AccountService accountService;
+    private String userServiceUrl;
 
-    @Autowired
-    private UserService userService;
-
-    @GetMapping("/user/{userId}/account/{accountId}/transactions")
-    public ResponseEntity<?> getAccountTransactions(@PathVariable Long userId, @PathVariable Long accountId) {
-        User user = userService.retrieveUser(userId);
-        if (user == null) {
-            return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
-        }
-        Account account = accountService.retrieveAccount(accountId);
-        if (account == null) {
-            return new ResponseEntity<>("Account not found.", HttpStatus.NOT_FOUND);
-        }
-
-        if (account.getUser().getId().equals(userId)) {
-            try {
-                List<TransactionDto> transactions = accountService.getAllTransactions(userId, accountId);
-                // Retrieve all transactions associated with the account that belongs to the user
-                if (transactions.isEmpty()) {
-                    return ResponseEntity.ok(Map.of("Message", "No transactions found for the account."));
-                } else {
-                    return ResponseEntity.ok(transactions);
-                }
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>("Error processing the deposit.", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            return new ResponseEntity<>("Transaction operation failed", HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{accountId}")
+    public ResponseEntity<?> getAccountById(@PathVariable Long accountId) {
+        Account account = accountService.getAccountById(accountId);
+        return ResponseEntity.ok(account);
     }
 
-    @PostMapping("/user/{userId}/account/{accountId}/transaction/deposit")
-    public ResponseEntity<?> deposit(@RequestBody TransactionDto transactionDto, @PathVariable Long
-            userId, @PathVariable Long accountId) {
+    @GetMapping("/{userId}/all")
+    public ResponseEntity<?> getAllAccounts(@PathVariable Long userId) {
+        List<AccountDto> accounts = accountService.getAllAccounts(userId);
+        return ResponseEntity.ok(accounts);
+    }
 
+    @PostMapping("/create")
+    public ResponseEntity<?> createAccount(@RequestBody AccountDto account) {
+        Account newAccount = accountService.createAccount(account);
+        return ResponseEntity.ok("Account created successfully. " + newAccount);
+    }
+
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<?> deleteAccount(@PathVariable Long accountId) {
+        accountService.deleteAccount(accountId);
+        return ResponseEntity.ok("Account deleted successfully");
+    }
+
+
+    //TODO requestUserId is not validated in the method
+    // to be validated using spring security Authentication object
+    @PostMapping("/{accountId}/deposit")
+    public ResponseEntity<?> deposit(@PathVariable Long accountId, @RequestParam BigDecimal amount, @PathVariable Long requestUserId) {
         // Validate and retrieve account objects for processing transaction
-        User user = userService.retrieveUser(userId);
-        if (user == null) {
-            return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
-        }
-        Account account = accountService.retrieveAccount(accountId);
-        if (account == null) {
-            return new ResponseEntity<>("Account not found.", HttpStatus.NOT_FOUND);
+        Account account = accountService.getAccountById(accountId);
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return new ResponseEntity<>("Amount must be greater than zero.", HttpStatus.BAD_REQUEST);
         }
 
-        // Check if the user & account exist and account belongs to the user
-        if (account.getUser().getId().equals(userId)) {
-            // Simple checks
-            if (transactionDto.getAmount() == null || transactionDto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-                return new ResponseEntity<>("Amount must be greater than zero.", HttpStatus.BAD_REQUEST);
-            }
-            if (transactionDto.getStatus() == null || transactionDto.getStatus().isEmpty()) {
-                return new ResponseEntity<>("Status is required.", HttpStatus.BAD_REQUEST);
-            }
+        try {
+            // Perform the deposit
+            accountService.deposit(accountId, amount, requestUserId);
 
-            // Create transaction and set account
-            Transaction transaction = new Transaction();
-            transaction.setAmount(transactionDto.getAmount());
-            transaction.setType(transactionDto.getType().getValue());
-            transaction.setTimestamp(LocalDateTime.now());  // Ensure proper conversion
-            transaction.setStatus(transactionDto.getStatus());
-
-            // IMPORTANT: Set the account on the transaction
-            transaction.setAccount(account);  // Associate the account with the transaction
-
-            try {
-                // Perform the deposit
-                accountService.deposit(transaction);
-
-                // Return the updated account
-                return ResponseEntity.ok("Deposit operation is successful");
-            } catch (Exception e) {
-                // Log the exception (use a logger for production)
-                e.printStackTrace();
-                return new ResponseEntity<>("Error processing the deposit.", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            return new ResponseEntity<>("Transaction operation failed", HttpStatus.NOT_FOUND);
+            // Return the updated account
+            return ResponseEntity.ok("Deposit operation is successful");
+        } catch (Exception e) {
+            // Log the exception (use a logger for production)
+            return new ResponseEntity<>("Error processing the deposit.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/user/{userId}/account/{accountId}/transaction/withdraw")
-    public ResponseEntity<?> withdraw(@RequestBody TransactionDto transactionDto, @PathVariable Long
-            userId, @PathVariable Long accountId) {
 
-        User user = userService.retrieveUser(userId);
-        if (user == null) {
-            return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
-        }
-        Account account = accountService.retrieveAccount(accountId);
-        if (account == null) {
-            return new ResponseEntity<>("Account not found.", HttpStatus.NOT_FOUND);
-        }
+    @PostMapping("/{accountId}/withdraw")
+    public ResponseEntity<?> withdraw(@PathVariable Long accountId, @RequestParam BigDecimal amount, @PathVariable Long requestUserId) {
+        // Validate and retrieve account objects for processing transaction
+        Account account = accountService.getAccountById(accountId);
 
         // Check if the user & account exist and account belongs to the user
-        if (account.getUser().getId().equals(userId)) {
+        if (account.getUserId().equals(requestUserId)) {
             // Simple validation checks for the withdrawal request
-            if (transactionDto.getAmount() == null || transactionDto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
                 return new ResponseEntity<>("Amount must be greater than zero.", HttpStatus.BAD_REQUEST);
-            }
-            if (transactionDto.getStatus() == null || transactionDto.getStatus().isEmpty()) {
-                return new ResponseEntity<>("Status is required.", HttpStatus.BAD_REQUEST);
             }
 
             // Ensure the account has enough balance for the withdrawal
-            if (account.getBalance().compareTo(transactionDto.getAmount()) < 0) {
+            if (account.getBalance().compareTo(amount) < 0) {
                 return new ResponseEntity<>("Insufficient funds.", HttpStatus.BAD_REQUEST);
             }
 
-            // Create the transaction and set necessary fields
-            Transaction transaction = new Transaction();
-            transaction.setAmount(transactionDto.getAmount());
-            transaction.setType(transactionDto.getType().getValue());
-            transaction.setTimestamp(LocalDateTime.now()); // Ensure correct parsing
-            transaction.setStatus(transactionDto.getStatus());
-
-            // IMPORTANT: Set the account for the transaction to ensure account_id is populated
-            transaction.setAccount(account);  // Associate the transaction with the account
-
             try {
                 // Process the withdrawal by calling the service method
-                accountService.withdraw(transaction);
+                accountService.withdraw(accountId, amount, requestUserId);
 
                 // Return the updated account information after withdrawal
                 return ResponseEntity.ok("Withdraw operation is successful");
             } catch (Exception e) {
                 // Log the exception (use a logger for production)
-                e.printStackTrace();
                 return new ResponseEntity<>("Error processing the withdrawal.", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {

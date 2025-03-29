@@ -1,11 +1,9 @@
 package com.example.account.model;
 
 import com.example.account.enums.ACCOUNT_TYPE;
-import com.example.bankSphere.repository.UserRepository;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Entity
 @Table(name = "accounts")
@@ -15,12 +13,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long accountId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false) // The owning side of the relationship
-    private User user;
-
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Transaction> transactions;
+    @Column(name = "userId", nullable = false)
+    private Long userId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "accountType", nullable = false)
@@ -30,11 +24,20 @@ public class Account {
     private BigDecimal balance = BigDecimal.ZERO;
 
     // Default constructor for JPA
-    public Account() {}
+    public Account() {
+    }
 
     // Getters and Setters
     public Long getId() {
         return accountId;
+    }
+
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public BigDecimal getBalance() {
@@ -49,38 +52,17 @@ public class Account {
         return accountType;
     }
 
-    public User getUser() {
-        return user;
-    }
-
     // Method to set accountType based on integer value
     public void setAccountType(int accountType) {
         this.accountType = ACCOUNT_TYPE.values()[accountType];  // Set accountType based on enum index
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    // New method to set the user by user ID
-    public void setUserById(Long userId, UserRepository userRepository) {
-        this.user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-    }
-
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
     @Override
     public String toString() {
         return "\"Account\":{" +
-                "\n\"accountType\": \"" + accountType + "\", \n\"balance\": " + balance + ", \n\"transactions\":[" +
-                showTransactions(transactions) + "\n]" + '}';
+                "\n\"accountType\": \"" + accountType + "\", \n\"balance\": " + balance + ", " + '}';
+//                "\n\"transactions\":[" +
+//                showTransactions(transactions) + "\n]" + '}';
     }
 
     @Override
@@ -96,15 +78,15 @@ public class Account {
         return Long.hashCode(accountId);
     }
 
-    public StringBuilder showTransactions(List<Transaction> transactions) {
-        StringBuilder sb = new StringBuilder();
-        for (Transaction transaction : transactions) {
-            sb.append(transaction).append(", ");
-        }
-        // Remove the trailing comma and space if there are transactions
-        if (sb.length() > 0) {
-            sb.delete(sb.length() - 2, sb.length());
-        }
-        return sb;
-    }
+//    public StringBuilder showTransactions(List<Transaction> transactions) {
+//        StringBuilder sb = new StringBuilder();
+//        for (Transaction transaction : transactions) {
+//            sb.append(transaction).append(", ");
+//        }
+//        // Remove the trailing comma and space if there are transactions
+//        if (sb.length() > 0) {
+//            sb.delete(sb.length() - 2, sb.length());
+//        }
+//        return sb;
+//    }
 }
