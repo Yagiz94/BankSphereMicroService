@@ -15,9 +15,8 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionID;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    @Column(nullable = false)
+    private Long accountId;
 
     @Column(nullable = false)
     private BigDecimal amount;
@@ -37,12 +36,8 @@ public class Transaction {
 
     // Getters and Setters
 
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
+    public Long getAccountId() {
+        return accountId;
     }
 
     public Long getTransactionID() {
