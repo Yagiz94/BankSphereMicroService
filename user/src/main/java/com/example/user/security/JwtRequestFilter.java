@@ -32,7 +32,7 @@ public class JwtRequestFilter implements Filter {
         // 1. Skip filtering for public endpoints like /api/test/** or /api/auth/register
         String requestUri = request.getRequestURI();
         System.out.println("Request URI: " + requestUri);
-        if (requestUri.startsWith("/api/test/") || requestUri.equals("/api/auth/register")) {
+        if (requestUri.equals("/api/user/register")) {
             // Simply pass the request to the next filter in the chain
             filterChain.doFilter(servletRequest, servletResponse);
             return;
