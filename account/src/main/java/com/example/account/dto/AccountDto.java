@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class AccountDto {
 
     private Long accountId;
-    private Long userId;
+    private String userName;
     private BigDecimal balance;
     private ACCOUNT_TYPE accountType;
 
@@ -25,12 +25,12 @@ public class AccountDto {
         this.accountId = accountId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public BigDecimal getBalance() {

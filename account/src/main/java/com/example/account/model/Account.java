@@ -13,9 +13,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long accountId;
 
-    @Column(name = "userId", nullable = false)
-    private Long userId;
-
+    @Column(name = "userName", nullable = false)
+    private String userName;
     @Enumerated(EnumType.STRING)
     @Column(name = "accountType", nullable = false)
     private ACCOUNT_TYPE accountType;
@@ -32,12 +31,12 @@ public class Account {
         return accountId;
     }
 
-    public Long getUserId() {
-        return this.userId;
+    public String getUserName() {
+        return this.userName;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public BigDecimal getBalance() {
@@ -61,8 +60,6 @@ public class Account {
     public String toString() {
         return "\"Account\":{" +
                 "\n\"accountType\": \"" + accountType + "\", \n\"balance\": " + balance + ", " + '}';
-//                "\n\"transactions\":[" +
-//                showTransactions(transactions) + "\n]" + '}';
     }
 
     @Override
@@ -78,15 +75,4 @@ public class Account {
         return Long.hashCode(accountId);
     }
 
-//    public StringBuilder showTransactions(List<Transaction> transactions) {
-//        StringBuilder sb = new StringBuilder();
-//        for (Transaction transaction : transactions) {
-//            sb.append(transaction).append(", ");
-//        }
-//        // Remove the trailing comma and space if there are transactions
-//        if (sb.length() > 0) {
-//            sb.delete(sb.length() - 2, sb.length());
-//        }
-//        return sb;
-//    }
 }

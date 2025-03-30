@@ -39,7 +39,7 @@ public class AccountService {
         List<AccountDto> accounts = accountRepository.findByUserId(userId).stream().map(account -> {
             AccountDto accountDto = new AccountDto();
             accountDto.setAccountId(account.getId());
-            accountDto.setUserId(account.getUserId());
+            accountDto.setUserName(account.getUserName());
             accountDto.setBalance(account.getBalance());
             accountDto.setAccountType(account.getAccountType());
             return accountDto;
@@ -52,14 +52,14 @@ public class AccountService {
     }
 
     public Account createAccount(AccountDto accountDto) {
-        if (accountDto == null || accountDto.getUserId() == null) {
-            throw new RuntimeException("User ID is required");
+        if (accountDto == null || accountDto.getUserName() == null) {
+            throw new RuntimeException("User name is required");
         }
-        if (!isUserValid(accountDto.getUserId())) {
+        if (!isUserValid(accountDto.getUserName())) {
             throw new RuntimeException("User is invalid");
         } else {
             Account account = new Account();
-            account.setUserId(accountDto.getUserId());
+            account.setUserName(accountDto.getUserName());
             account.setBalance(accountDto.getBalance());
             account.setAccountType(accountDto.getAccountType().getValue());
             return accountRepository.save(account);
@@ -73,9 +73,9 @@ public class AccountService {
         accountRepository.delete(account);
     }
 
-    public boolean isUserValid(Long userId) {
+    public boolean isUserValid(String userName) {
         try {
-            String url = userServiceUrl + "/api/user/validate/" + userId;
+            String url = userServiceUrl + "/api/user/validate/" + userName;
             ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class);
             return Boolean.TRUE.equals(response.getBody()); // Ensure proper Boolean handling
         } catch (Exception e) {
@@ -84,12 +84,12 @@ public class AccountService {
     }
 
     @Transactional
-    public void deposit(Long accountId, BigDecimal amount, Long requestingUserId) {
+    public void deposit(Long accountId, BigDecimal amount, String requestingUserName) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
 
         // Validate ownership: Ensure the account belongs to the user making the request.
-        if (!account.getUserId().equals(requestingUserId)) {
+        if (!account.getUserName().equals(requestingUserName)) {
             throw new RuntimeException("Unauthorized: This account does not belong to the user");
         }
 
@@ -100,12 +100,12 @@ public class AccountService {
 
     // Similarly, for withdrawal:
     @Transactional
-    public void withdraw(Long accountId, BigDecimal amount, Long requestingUserId) {
+    public void withdraw(Long accountId, BigDecimal amount, String requestingUserName) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         // Validate ownership.
-        if (!account.getUserId().equals(requestingUserId)) {
+        if (!account.getUserName().equals(requestingUserName)) {
             throw new RuntimeException("Unauthorized: This account does not belong to the user");
         }
 

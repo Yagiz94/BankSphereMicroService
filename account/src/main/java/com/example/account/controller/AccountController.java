@@ -45,10 +45,10 @@ public class AccountController {
     }
 
 
-    //TODO requestUserId is not validated in the method
+    //TODO requestUserName is not validated in the method
     // to be validated using spring security Authentication object
     @PostMapping("/{accountId}/deposit")
-    public ResponseEntity<?> deposit(@PathVariable Long accountId, @RequestParam BigDecimal amount, @PathVariable Long requestUserId) {
+    public ResponseEntity<?> deposit(@PathVariable Long accountId, @RequestParam BigDecimal amount, @PathVariable String requestUserName) {
         // Validate and retrieve account objects for processing transaction
         Account account = accountService.getAccountById(accountId);
 
@@ -58,7 +58,7 @@ public class AccountController {
 
         try {
             // Perform the deposit
-            accountService.deposit(accountId, amount, requestUserId);
+            accountService.deposit(accountId, amount, requestUserName);
 
             // Return the updated account
             return ResponseEntity.ok("Deposit operation is successful");
@@ -70,12 +70,12 @@ public class AccountController {
 
 
     @PostMapping("/{accountId}/withdraw")
-    public ResponseEntity<?> withdraw(@PathVariable Long accountId, @RequestParam BigDecimal amount, @PathVariable Long requestUserId) {
+    public ResponseEntity<?> withdraw(@PathVariable Long accountId, @RequestParam BigDecimal amount, @PathVariable String requestUserName) {
         // Validate and retrieve account objects for processing transaction
         Account account = accountService.getAccountById(accountId);
 
         // Check if the user & account exist and account belongs to the user
-        if (account.getUserId().equals(requestUserId)) {
+        if (account.getUserName().equals(requestUserName)) {
             // Simple validation checks for the withdrawal request
             if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
                 return new ResponseEntity<>("Amount must be greater than zero.", HttpStatus.BAD_REQUEST);
@@ -88,7 +88,7 @@ public class AccountController {
 
             try {
                 // Process the withdrawal by calling the service method
-                accountService.withdraw(accountId, amount, requestUserId);
+                accountService.withdraw(accountId, amount, requestUserName);
 
                 // Return the updated account information after withdrawal
                 return ResponseEntity.ok("Withdraw operation is successful");

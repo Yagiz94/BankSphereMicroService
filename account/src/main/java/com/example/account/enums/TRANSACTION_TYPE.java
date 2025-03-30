@@ -1,7 +1,6 @@
 package com.example.account.enums;
 
 public enum TRANSACTION_TYPE {
-
     Transfer(0),
     BillPayment(1),
     Deposit(2),
