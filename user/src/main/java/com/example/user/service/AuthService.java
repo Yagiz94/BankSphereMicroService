@@ -2,9 +2,8 @@
 package com.example.user.service;
 
 import com.example.user.dto.UserRequestDto;
-import com.example.user.model.User;
 import com.example.user.enums.KYC_STATUS;
-import com.example.user.repository.UserLoggerRepository;
+import com.example.user.model.User;
 import com.example.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +19,6 @@ public class AuthService {
 
     @Autowired
     private KycService kycService;
-
-    @Autowired
-    private UserLoggerRepository userLoggerRepository;
 
     // Register a new user
     public User registerUser(UserRequestDto userDto) {

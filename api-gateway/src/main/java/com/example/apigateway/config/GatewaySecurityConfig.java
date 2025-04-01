@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -36,18 +35,22 @@ public class GatewaySecurityConfig {
 //                .authorizeRequests()
 //                .antMatchers("/public/**", "/actuator/**").permitAll()
 //                .anyRequest().authenticated();
-        http
-                .csrf(AbstractHttpConfigurer::disable) // disable CSRF for stateless APIs
-                .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/api/user/register").permitAll()
-                                .anyRequest().authenticated());
 
-        // Register your custom JWT filter before the default UsernamePasswordAuthenticationFilter
+        http
+                .httpBasic(httpBasic -> httpBasic.disable())
+                // Disable CSRF protection for stateless APIs
+                .csrf(csrf -> csrf.disable())
+                // Configure exception handling
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                // Set session management to stateless
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Configure public endpoints and require authentication for others
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/api/user/register", "/api/user/login", "/api/user/authenticate", "/public/**").permitAll()
+                        .anyRequest().authenticated()
+                );
+
+        // Add the custom JWT filter before the UsernamePasswordAuthenticationFilter
         http.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
