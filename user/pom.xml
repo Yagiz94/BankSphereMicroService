@@ -10,6 +10,12 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>user</name>
     <description>user</description>
+    <properties>
+        <java.version>17</java.version>
+        <spring-boot.version>3.3.10</spring-boot.version> <!-- Add this line -->
+        <spring-cloud.version>2022.x.x</spring-cloud.version>
+        <jjwt.version>0.12.6</jjwt.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -43,6 +49,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+        <!--MySQL connection-->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <!--Spring Data MongoDB-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -52,13 +64,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>6.0.12</version> <!-- Version aligned with Spring Boot 3.1.4 -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>3.1.4</version>
         </dependency>
 
         <!--Tokenization-->
@@ -80,20 +90,14 @@
 
         <!--		Spring Data Redis-->
         <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-        <!-- Spring Security Resource Server-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
