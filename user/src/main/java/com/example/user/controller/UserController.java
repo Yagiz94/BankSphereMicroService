@@ -149,7 +149,7 @@ public class UserController {
     public ResponseEntity<?> getAllUsers(@RequestHeader("senderID") Long senderId) {
         User user = userService.getUser(senderId);
         if (user.getRole().getValue() != 2) {
-            return ResponseEntity.badRequest().body("You are not authorized to delete a user");
+            throw new UserNotFoundException("Authorization failed");
         } else {
             return ResponseEntity.ok(userService.getAllUsers());
         }
