@@ -79,8 +79,8 @@ public class JwtFilter implements WebFilter {
             return exchange.getResponse().writeWith(Mono.just(buffer));
         }
 
+        // 5. Using the stored secretKey, retrieve the token and compare it with the received token
         String storedToken = new String(Base64.getDecoder().decode(secretKeyBase64), StandardCharsets.UTF_8);
-        System.out.println("JwtFilter: Extracted token is: " + storedToken);
         if (!storedToken.equals(jwtToken)) {
             System.out.println("JwtFilter: Token mismatch or expired token for user");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
