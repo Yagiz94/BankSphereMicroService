@@ -57,7 +57,7 @@ public class JwtFilter implements WebFilter {
         }
 
         String jwtToken = authHeader.substring(7); // Remove "Bearer " prefix
-        System.out.println("JwtFilter: Extracted token: " + jwtToken);
+        System.out.println("JwtFilter: Received token: " + jwtToken);
 
         // 3. Extract the username from the JWT token
         String username = extractUsernameFromToken(jwtToken);
@@ -72,7 +72,7 @@ public class JwtFilter implements WebFilter {
         // 4. Retrieve the stored secret key (token) from Redis for this user
         String secretKeyBase64 = jwtRedisService.retrieveSecretKey(username);
         if (secretKeyBase64 == null) {
-            System.out.println("JwtFilter: Secret key not found for user: " + username);
+            System.out.println("JwtFilter: Secret key not found for user");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             DataBuffer buffer = exchange.getResponse().bufferFactory()
                     .wrap("Secret key not found for user.".getBytes(StandardCharsets.UTF_8));
@@ -80,15 +80,16 @@ public class JwtFilter implements WebFilter {
         }
 
         String storedToken = new String(Base64.getDecoder().decode(secretKeyBase64), StandardCharsets.UTF_8);
+        System.out.println("JwtFilter: Extracted token is: " + storedToken);
         if (!storedToken.equals(jwtToken)) {
-            System.out.println("JwtFilter: Token mismatch or expired token for user: " + username);
+            System.out.println("JwtFilter: Token mismatch or expired token for user");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             DataBuffer buffer = exchange.getResponse().bufferFactory()
                     .wrap("Invalid or expired token.".getBytes(StandardCharsets.UTF_8));
             return exchange.getResponse().writeWith(Mono.just(buffer));
         }
 
-        System.out.println("JwtFilter: Token validated successfully for user: " + username);
+        System.out.println("JwtFilter: Token validation completed.");
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
         SecurityContext securityContext = new SecurityContextImpl(authentication);
 

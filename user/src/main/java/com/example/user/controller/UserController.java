@@ -124,14 +124,11 @@ public class UserController {
                 .setSubject(username)  // Use 'sub' for username
                 .claim("username", username)  // Explicitly add 'username' to claims
                 .setIssuedAt(new Date())  // Correct way to set 'iat'
-                .signWith(secretKey)  // Sign with user-specific secret key
+                .signWith(secretKey)  // Base64.getEncoder().encodeToString(jwtToken.getBytes());Sign with user-specific secret key
                 .compact();
 
         // Debug prints
         System.out.println("Generated token: " + token);
-        System.out.println("Secret key length: " + secretKeyBytes.length);
-        System.out.println("Secret key (Base64): " + secretKeyBase64);
-
         return token;
     }
 
