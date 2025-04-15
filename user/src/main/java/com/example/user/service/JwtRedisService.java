@@ -30,7 +30,7 @@ public class JwtRedisService {
     /**
      * Remove a JWT token from Redis (e.g., during logout).
      */
-    public void removeSecretKey(String token) {
-        redisTemplate.delete(token);
+    public void removeSecretKey(String userName) {
+        redisTemplate.delete(userName);
     }
 }

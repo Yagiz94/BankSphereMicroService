@@ -133,16 +133,7 @@ public class UserController {
         return token;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUser(id));
-    }
-
-    @GetMapping("/validate/{id}")
-    public ResponseEntity<Boolean> validateUser(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUser(id) != null);
-    }
-
+    //Admin privileges
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers(@RequestHeader(value = "userName") String userName) {
         User user = userService.getUserByUserName(userName);
@@ -153,15 +144,18 @@ public class UserController {
         }
     }
 
+    //Admin privileges
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestBody AdminDto adminDto) {
-        User user = userService.getUser(adminDto.getRequestUserID());
-        if (user.getRole().getValue() != 2) {
+    public ResponseEntity<String> deleteUser(@RequestHeader(value = "userName") String userName, @RequestBody AdminDto adminDto) {
+        User requestUser = userService.getUserByUserName(userName);
+        if (requestUser.getRole() != ROLE.ADMIN) {
             return ResponseEntity.badRequest().body("You are not authorized to delete a user");
         } else {
+            User targetUser = userService.getUserById(Long.valueOf(adminDto.getTargetUserID().toString()));
+            // delete user from database
             userService.deleteUser(adminDto.getTargetUserID());
             // remove user token from Redis
-            jwtRedisService.removeSecretKey(adminDto.getTargetUserID().toString());
+            jwtRedisService.removeSecretKey(targetUser.getUsername());
             System.out.println("User deleted successfully.");
             return ResponseEntity.ok("User deleted successfully");
         }

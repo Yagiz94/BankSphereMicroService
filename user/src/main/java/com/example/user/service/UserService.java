@@ -13,16 +13,13 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User getUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+    public User getUserById(Long userId) {
+        return userRepository.findById(String.valueOf(userId))
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     public User getUserByUserName(String userName) {

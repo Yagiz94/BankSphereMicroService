@@ -5,8 +5,6 @@ import com.example.user.enums.KYC_STATUS;
 import com.example.user.enums.ROLE;
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "users")
 public class User {
@@ -34,7 +32,8 @@ public class User {
     @Column(name = "kycStatus", nullable = false)
     private KYC_STATUS kycStatus;
 
-    public User() {}
+    public User() {
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -97,15 +96,7 @@ public class User {
                 ", \n\"phoneNumber\":" + phoneNumber +
                 ", \n\"role\":" + role +
                 ", \n\"kycStatus\":" + kycStatus +
-//                ", \n\"accounts\":[\n" + showAccounts(accounts) + "\n]" +
                 '}';
     }
 
-//    public StringBuilder showAccounts(List<Account> accounts) {
-//        StringBuilder sb = new StringBuilder();
-//        for (Account account : accounts) {
-//            sb.append(account);
-//        }
-//        return sb;
-//    }
 }
