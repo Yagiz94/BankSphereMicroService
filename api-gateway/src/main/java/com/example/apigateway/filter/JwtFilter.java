@@ -96,7 +96,7 @@ public class JwtFilter implements WebFilter {
 
         // Now, mutate the request to add the "userName" header with the username
         // By mutating the exchange to add the header with the username, you're effectively “injecting” that information into every request processed by downstream handlers.
-        // This ensures that your controller method receives the senderID header (or any other header you need) that matches the username corresponding to the token stored in Redis.
+        // This ensures that your controller method receives the userName header (or any other header you need) that matches the username corresponding to the token stored in Redis.
         ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                 .header("userName", username)
                 .build();
