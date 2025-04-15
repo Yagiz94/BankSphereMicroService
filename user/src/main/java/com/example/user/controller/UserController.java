@@ -2,6 +2,7 @@ package com.example.user.controller;
 
 import com.example.user.dto.AdminDto;
 import com.example.user.dto.UserRequestDto;
+import com.example.user.enums.ROLE;
 import com.example.user.exception.UserAlreadyExistsException;
 import com.example.user.exception.UserFieldsMissingException;
 import com.example.user.exception.UserLoginCredentialsInvalidException;
@@ -143,9 +144,9 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllUsers(@RequestHeader("senderID") Long senderId) {
-        User user = userService.getUser(senderId);
-        if (user.getRole().getValue() != 2) {
+    public ResponseEntity<?> getAllUsers(@RequestHeader(value = "userName") String userName) {
+        User user = userService.getUserByUserName(userName);
+        if (user.getRole() != ROLE.ADMIN) {
             throw new UserNotFoundException("Authorization failed");
         } else {
             return ResponseEntity.ok(userService.getAllUsers());

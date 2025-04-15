@@ -25,6 +25,15 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
+    public User getUserByUserName(String userName) {
+        User user = userRepository.findByUsername(userName);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        } else {
+            return user;
+        }
+    }
+
     // Additional administrative functions (user management, logs, etc.)
     public void deleteUser(Long userId) {
         // Implement the logic to delete a user

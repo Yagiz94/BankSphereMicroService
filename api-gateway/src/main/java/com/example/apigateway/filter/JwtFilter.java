@@ -9,6 +9,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -93,8 +94,16 @@ public class JwtFilter implements WebFilter {
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
         SecurityContext securityContext = new SecurityContextImpl(authentication);
 
+        // Now, mutate the request to add the "userName" header with the username
+        // By mutating the exchange to add the header with the username, you're effectively “injecting” that information into every request processed by downstream handlers.
+        // This ensures that your controller method receives the senderID header (or any other header you need) that matches the username corresponding to the token stored in Redis.
+        ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                .header("userName", username)
+                .build();
+        ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();
+
         // Optionally, you can add user information to the request (for example, in headers) if needed.
-        return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
+        return chain.filter(mutatedExchange).contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
     }
 
     /**
