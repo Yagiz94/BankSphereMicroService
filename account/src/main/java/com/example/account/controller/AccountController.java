@@ -18,7 +18,6 @@ public class AccountController {
 
     @Autowired
     private AccountService accountService;
-    private String userServiceUrl;
 
     @GetMapping("/{accountId}")
     public ResponseEntity<?> getAccountById(@PathVariable Long accountId) {
@@ -26,24 +25,23 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
-    @GetMapping("/{userId}/all")
-    public ResponseEntity<?> getAllAccounts(@PathVariable Long userId) {
-        List<AccountDto> accounts = accountService.getAllAccounts(userId);
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllAccounts(@RequestHeader(value = "userName") String userName) {
+        List<AccountDto> accounts = accountService.getAllAccounts(userName);
         return ResponseEntity.ok(accounts);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createAccount(@RequestBody AccountDto account) {
-        Account newAccount = accountService.createAccount(account);
+    public ResponseEntity<?> createAccount(@RequestHeader(value = "userName") String userName, @RequestBody AccountDto account) {
+        Account newAccount = accountService.createAccount(account, userName);
         return ResponseEntity.ok("Account created successfully. " + newAccount);
     }
 
-    @DeleteMapping("/{accountId}")
+    @DeleteMapping("/delete/{accountId}")
     public ResponseEntity<?> deleteAccount(@PathVariable Long accountId) {
         accountService.deleteAccount(accountId);
         return ResponseEntity.ok("Account deleted successfully");
     }
-
 
     //TODO requestUserName is not validated in the method
     // to be validated using spring security Authentication object
@@ -67,7 +65,6 @@ public class AccountController {
             return new ResponseEntity<>("Error processing the deposit.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @PostMapping("/{accountId}/withdraw")
     public ResponseEntity<?> withdraw(@PathVariable Long accountId, @RequestParam BigDecimal amount, @PathVariable String requestUserName) {

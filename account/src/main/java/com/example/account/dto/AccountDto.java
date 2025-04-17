@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 
 public class AccountDto {
 
-    private Long accountId;
-    private String userName;
     private BigDecimal balance;
     private ACCOUNT_TYPE accountType;
 
@@ -16,23 +14,6 @@ public class AccountDto {
     }
 
     // Getters and Setters
-
-    public Long getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public BigDecimal getBalance() {
         return balance;
     }

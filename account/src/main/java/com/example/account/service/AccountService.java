@@ -7,10 +7,7 @@ import com.example.account.model.Account;
 import com.example.account.repository.AccountRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,48 +19,36 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Value("${user.service.url}") // Example: "http://localhost:8081"
-    private String userServiceUrl;
-
     // Method to retrieve account by id and userId
     public Account getAccountById(Long accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
     }
 
-    public List<AccountDto> getAllAccounts(Long userId) {
+    public List<AccountDto> getAllAccounts(String userName) {
         // Find the user by ID
-        List<AccountDto> accounts = accountRepository.findByUserId(userId).stream().map(account -> {
+        List<AccountDto> accounts = accountRepository.findByUserName(userName).stream().map(account -> {
             AccountDto accountDto = new AccountDto();
-            accountDto.setAccountId(account.getId());
-            accountDto.setUserName(account.getUserName());
             accountDto.setBalance(account.getBalance());
             accountDto.setAccountType(account.getAccountType());
             return accountDto;
         }).collect(Collectors.toList());
         if (accounts.isEmpty()) {
-            throw new AccountNotFoundException("No accounts found for user id: " + userId);
+            throw new AccountNotFoundException("No accounts found for the user");
         } else {
             return accounts;
         }
     }
 
-    public Account createAccount(AccountDto accountDto) {
-        if (accountDto == null || accountDto.getUserName() == null) {
-            throw new RuntimeException("User name is required");
+    public Account createAccount(AccountDto accountDto, String userName) {
+        if (accountDto == null) {
+            throw new RuntimeException("Account attributes are required");
         }
-        if (!isUserValid(accountDto.getUserName())) {
-            throw new RuntimeException("User is invalid");
-        } else {
-            Account account = new Account();
-            account.setUserName(accountDto.getUserName());
-            account.setBalance(accountDto.getBalance());
-            account.setAccountType(accountDto.getAccountType().getValue());
-            return accountRepository.save(account);
-        }
+        Account account = new Account();
+        account.setUserName(userName);
+        account.setBalance(accountDto.getBalance());
+        account.setAccountType(accountDto.getAccountType().getValue());
+        return accountRepository.save(account);
     }
 
     public void deleteAccount(Long accountId) {
@@ -71,16 +56,6 @@ public class AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         accountRepository.delete(account);
-    }
-
-    public boolean isUserValid(String userName) {
-        try {
-            String url = userServiceUrl + "/api/user/validate/" + userName;
-            ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class);
-            return Boolean.TRUE.equals(response.getBody()); // Ensure proper Boolean handling
-        } catch (Exception e) {
-            return false; // If request fails, assume user is invalid
-        }
     }
 
     @Transactional
