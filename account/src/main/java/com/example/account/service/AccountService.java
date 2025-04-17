@@ -51,10 +51,13 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    public void deleteAccount(Long accountId) {
+    public void deleteAccount(Long accountId, String userName) {
         // Find the account associated with the user
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+        if (!(account.getUserName().equals(userName))) {
+            throw new AccountNotFoundException("Unauthorized. Account not found");
+        }
         accountRepository.delete(account);
     }
 

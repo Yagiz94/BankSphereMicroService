@@ -38,8 +38,8 @@ public class AccountController {
     }
 
     @DeleteMapping("/delete/{accountId}")
-    public ResponseEntity<?> deleteAccount(@PathVariable Long accountId) {
-        accountService.deleteAccount(accountId);
+    public ResponseEntity<?> deleteAccount(@RequestHeader(value = "userName") String userName, @PathVariable Long accountId) {
+        accountService.deleteAccount(accountId,userName);
         return ResponseEntity.ok("Account deleted successfully");
     }
 
