@@ -46,7 +46,7 @@ public class AccountService {
         }
         Account account = new Account();
         account.setUserName(userName);
-        account.setBalance(accountDto.getBalance());
+        account.setBalance(BigDecimal.ZERO);
         account.setAccountType(accountDto.getAccountType().getValue());
         return accountRepository.save(account);
     }
