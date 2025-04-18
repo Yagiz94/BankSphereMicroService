@@ -1,24 +1,21 @@
 package com.example.common.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum TRANSACTION_TYPE {
+    DEPOSIT, WITHDRAWAL;
 
-    Withdraw(0),
-    Deposit(1);
-
-    private int value;
-
-    TRANSACTION_TYPE(final int value) {
-        this.value = value;
+    @JsonCreator
+    public static TRANSACTION_TYPE from(String value) {
+        return TRANSACTION_TYPE.valueOf(value.toUpperCase());
     }
 
-    public int getValue() {
-        return value;
+    // Optional: serialize using name()
+    @JsonValue
+    public String toValue() {
+        return this.name();
     }
-
-    public int setValue(int value) {
-        return this.value = value;
-    }
-
 }
 
 

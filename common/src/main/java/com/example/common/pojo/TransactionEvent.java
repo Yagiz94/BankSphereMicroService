@@ -10,7 +10,7 @@ public class TransactionEvent implements Serializable {
     private Long accountId;
     private BigDecimal amount;
 
-    private TRANSACTION_TYPE transactionType; // e.g., "WITHDRAWAL", "DEPOSIT"
+    private TRANSACTION_TYPE transactionType;
 
     public TransactionEvent() {
     }
@@ -44,8 +44,8 @@ public class TransactionEvent implements Serializable {
         return transactionType;
     }
 
-    public void setTransactionType(int transactionType) {
-        this.transactionType = TRANSACTION_TYPE.values()[transactionType];
+    public void setTransactionType(TRANSACTION_TYPE transactionType) {
+        this.transactionType = transactionType;
     }
 
     @Override
