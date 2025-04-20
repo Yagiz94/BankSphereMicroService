@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.AccountNotFoundException;
+
 @RestController
 @RequestMapping("/api/transaction")
 public class TransactionController {
@@ -21,7 +23,7 @@ public class TransactionController {
     public ResponseEntity<Transaction> processTransaction(
             // Get the userName from the token that is passed by the mutatedExchange in the gateway
             @RequestHeader("userName") String userName,
-            @RequestBody TransactionEvent transactionEvent) {
+            @RequestBody TransactionEvent transactionEvent) throws AccountNotFoundException {
 
         Transaction transaction = transactionService.processTransaction(userName, transactionEvent.getAccountId(), transactionEvent.getAmount(), transactionEvent.getTransactionType());
         transactionPublisher.publish(userName, transactionEvent.getAccountId(), transactionEvent.getAmount(), transactionEvent.getTransactionType());

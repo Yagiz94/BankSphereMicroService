@@ -23,6 +23,12 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
 
+    @GetMapping("/validate/{accountId}")
+    public ResponseEntity<?> validateAccount(@RequestHeader(value = "userName") String userName, @PathVariable Long accountId) {
+        boolean response = accountService.validateAccount(userName, accountId);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createAccount(@RequestHeader(value = "userName") String userName, @RequestBody AccountDto account) {
         Account newAccount = accountService.createAccount(account, userName);

@@ -34,6 +34,17 @@ public class AccountService {
         }
     }
 
+    public boolean validateAccount(String userName, Long accountId) {
+        boolean response = false;
+        // Find the account associated with the user
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account not found"));
+        // Check if the account belongs to the user
+        response = account != null && account.getUserName().equals(userName);
+        if (response)
+            System.out.println("Account is valid");
+        return response;
+    }
+
     public Account createAccount(AccountDto accountDto, String userName) {
         if (accountDto == null) {
             throw new RuntimeException("Account attributes are required");

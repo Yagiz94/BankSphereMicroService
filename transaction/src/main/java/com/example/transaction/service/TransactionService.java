@@ -1,6 +1,7 @@
 package com.example.transaction.service;
 
 import com.example.common.enums.TRANSACTION_TYPE;
+import com.example.transaction.exception.AccountNotFoundException;
 import com.example.transaction.exception.InsufficientFundException;
 import com.example.transaction.model.Transaction;
 import com.example.transaction.repository.TransactionRepository;
@@ -33,6 +34,27 @@ public class TransactionService {
 
     @Transactional
     public Transaction processTransaction(String userName, Long accountId, BigDecimal amount, TRANSACTION_TYPE transactionType) {
+        // Validate account
+        // Call Account module to validate the account
+        HttpServletRequest incoming = ((ServletRequestAttributes)
+                RequestContextHolder.currentRequestAttributes()).getRequest();
+        String authHeader = incoming.getHeader("Authorization");
+        // Call Account validate endpoint with the same header
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authHeader);
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<?> response = restTemplate.exchange(
+                "http://localhost:8080/api/account/validate/{accountId}",
+                HttpMethod.GET,
+                request,
+                Object.class,
+                Map.of("accountId", accountId)
+        );
+        if (response.getStatusCode().isError() || !(Objects.equals(response.getBody(), true))) {
+            throw new AccountNotFoundException("Account not found");
+        }
+
+
         // Validate input
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Amount must be positive");
@@ -40,23 +62,22 @@ public class TransactionService {
 
         if (transactionType.equals(TRANSACTION_TYPE.WITHDRAWAL)) {
             // Send request to account module to get the current balance of the target account
-            // Grab the incoming JWT
-            HttpServletRequest incoming = ((ServletRequestAttributes)
+            HttpServletRequest incoming2 = ((ServletRequestAttributes)
                     RequestContextHolder.currentRequestAttributes()).getRequest();
-            String authHeader = incoming.getHeader("Authorization");
+            String authHeader2 = incoming2.getHeader("Authorization");
             // Call Account balance endpoint with the same header
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", authHeader);
-            HttpEntity<?> request = new HttpEntity<>(headers);
+            HttpHeaders headers2 = new HttpHeaders();
+            headers2.set("Authorization", authHeader2);
+            HttpEntity<?> request2 = new HttpEntity<>(headers2);
 
-            ResponseEntity<BigDecimal> response = restTemplate.exchange(
+            ResponseEntity<BigDecimal> response2 = restTemplate.exchange(
                     "http://localhost:8080/api/account/{accountId}/balance",
                     HttpMethod.GET,
-                    request,
+                    request2,
                     BigDecimal.class,
                     Map.of("accountId", accountId)
             );
-            BigDecimal balance = response.getBody();
+            BigDecimal balance = response2.getBody();
             // Compare the current balance amount with the transaction's requested withdrawal amount
             if (Objects.requireNonNull(balance).compareTo(amount) < 0) {
                 throw new InsufficientFundException("Insufficient funds");
