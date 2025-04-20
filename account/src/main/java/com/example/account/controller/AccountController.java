@@ -1,4 +1,3 @@
-// controller/AccountController.java
 package com.example.account.controller;
 
 import com.example.account.dto.AccountDto;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -16,12 +16,6 @@ public class AccountController {
 
     @Autowired
     private AccountService accountService;
-
-    @GetMapping("/{accountId}")
-    public ResponseEntity<?> getAccountById(@PathVariable Long accountId) {
-        Account account = accountService.getAccountById(accountId);
-        return ResponseEntity.ok(account);
-    }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllAccounts(@RequestHeader(value = "userName") String userName) {
@@ -35,11 +29,11 @@ public class AccountController {
         return ResponseEntity.ok("Account created successfully. " + newAccount);
     }
 
-//    @PutMapping("/update/{accountId}")
-//    public ResponseEntity<?> updateAccount(@RequestHeader(value = "userName") String userName, @PathVariable Long accountId, @RequestBody AccountDto account) {
-//        Account updatedAccount = accountService.updateAccount(userName, accountId, account);
-//        return ResponseEntity.ok("Account updated successfully. " + updatedAccount);
-//    }
+    @GetMapping("/{accountId}/balance")
+    public ResponseEntity<?> getAccountBalance(@RequestHeader("userName") String userName, @PathVariable Long accountId) {
+        BigDecimal currentBalance = accountService.getAccountBalance(userName, accountId);
+        return ResponseEntity.ok(currentBalance);
+    }
 
     @DeleteMapping("/delete/{accountId}")
     public ResponseEntity<?> deleteAccount(@RequestHeader(value = "userName") String userName, @PathVariable Long accountId) {

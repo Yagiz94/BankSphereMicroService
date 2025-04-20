@@ -19,12 +19,6 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    // Method to retrieve account by id and userId
-    public Account getAccountById(Long accountId) {
-        return accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
-    }
-
     public List<AccountDto> getAllAccounts(String userName) {
         // Find the user by ID
         List<AccountDto> accounts = accountRepository.findByUserName(userName).stream().map(account -> {
@@ -64,6 +58,15 @@ public class AccountService {
         }
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
+    }
+
+    public BigDecimal getAccountBalance(String userName, Long accountId) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account not found"));
+        // Check if the account belongs to the user
+        if (!(account.getUserName().equals(userName))) {
+            throw new AccountNotFoundException("Unauthorized. Account not found");
+        }
+        return account.getBalance();
     }
 
     public void deleteAccount(Long accountId, String userName) {
