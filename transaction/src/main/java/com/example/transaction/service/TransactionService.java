@@ -61,23 +61,21 @@ public class TransactionService {
             if (Objects.requireNonNull(balance).compareTo(amount) < 0) {
                 throw new InsufficientFundException("Insufficient funds");
             } else {
-                Transaction transaction = new Transaction();
-                transaction.setUserName(userName);
-                transaction.setAccountId(accountId);
-                transaction.setAmount(amount);
-                transaction.setType(transactionType);
-                transaction.setTimestamp(LocalDateTime.now());
-                return transactionRepository.save(transaction);
+                return getTransaction(userName, accountId, amount, transactionType);
             }
         } else {
-            Transaction transaction = new Transaction();
-            transaction.setUserName(userName);
-            transaction.setAccountId(accountId);
-            transaction.setAmount(amount);
-            transaction.setType(transactionType);
-            transaction.setTimestamp(LocalDateTime.now());
-            return transactionRepository.save(transaction);
+            return getTransaction(userName, accountId, amount, transactionType);
         }
+    }
+
+    private Transaction getTransaction(String userName, Long accountId, BigDecimal amount, TRANSACTION_TYPE transactionType) {
+        Transaction transaction = new Transaction();
+        transaction.setUserName(userName);
+        transaction.setAccountId(accountId);
+        transaction.setAmount(amount);
+        transaction.setType(transactionType);
+        transaction.setTimestamp(LocalDateTime.now());
+        return transactionRepository.save(transaction);
     }
 
     public List<Transaction> getAllTransactions(Long accountId) {
