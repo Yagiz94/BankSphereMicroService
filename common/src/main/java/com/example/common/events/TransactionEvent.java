@@ -1,4 +1,4 @@
-package com.example.common.pojo;
+package com.example.common.events;
 
 import com.example.common.enums.TRANSACTION_TYPE;
 

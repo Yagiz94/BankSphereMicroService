@@ -2,7 +2,7 @@ package com.example.account.listener;
 
 import com.example.account.service.AccountService;
 import com.example.common.enums.TRANSACTION_TYPE;
-import com.example.common.pojo.TransactionEvent;
+import com.example.common.events.TransactionEvent;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 

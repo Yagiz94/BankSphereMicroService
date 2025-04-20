@@ -1,7 +1,6 @@
 package com.example.account.config;
 
-import com.example.common.pojo.TransactionEvent;
-import com.fasterxml.jackson.databind.MapperFeature;
+import com.example.common.events.TransactionEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.*;
