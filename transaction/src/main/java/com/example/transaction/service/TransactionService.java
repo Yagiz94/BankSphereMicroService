@@ -38,27 +38,37 @@ public class TransactionService {
             throw new IllegalArgumentException("Amount must be positive");
         }
 
-        // Send request to account module to get the current balance of the target account
-        // Grab the incoming JWT
-        HttpServletRequest incoming = ((ServletRequestAttributes)
-                RequestContextHolder.currentRequestAttributes()).getRequest();
-        String authHeader = incoming.getHeader("Authorization");
-        // Call Account balance endpoint with the same header
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authHeader);
-        HttpEntity<?> request = new HttpEntity<>(headers);
+        if (transactionType.equals(TRANSACTION_TYPE.WITHDRAWAL)) {
+            // Send request to account module to get the current balance of the target account
+            // Grab the incoming JWT
+            HttpServletRequest incoming = ((ServletRequestAttributes)
+                    RequestContextHolder.currentRequestAttributes()).getRequest();
+            String authHeader = incoming.getHeader("Authorization");
+            // Call Account balance endpoint with the same header
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", authHeader);
+            HttpEntity<?> request = new HttpEntity<>(headers);
 
-        ResponseEntity<BigDecimal> response = restTemplate.exchange(
-                "http://localhost:8080/api/account/{accountId}/balance",
-                HttpMethod.GET,
-                request,
-                BigDecimal.class,
-                Map.of("accountId", accountId)
-        );
-        BigDecimal balance = response.getBody();
-        // Compare the current balance amount with the transaction's requested withdrawal amount
-        if (transactionType.equals(TRANSACTION_TYPE.WITHDRAWAL) && Objects.requireNonNull(balance).compareTo(amount) < 0) {
-            throw new InsufficientFundException("Insufficient funds");
+            ResponseEntity<BigDecimal> response = restTemplate.exchange(
+                    "http://localhost:8080/api/account/{accountId}/balance",
+                    HttpMethod.GET,
+                    request,
+                    BigDecimal.class,
+                    Map.of("accountId", accountId)
+            );
+            BigDecimal balance = response.getBody();
+            // Compare the current balance amount with the transaction's requested withdrawal amount
+            if (Objects.requireNonNull(balance).compareTo(amount) < 0) {
+                throw new InsufficientFundException("Insufficient funds");
+            } else {
+                Transaction transaction = new Transaction();
+                transaction.setUserName(userName);
+                transaction.setAccountId(accountId);
+                transaction.setAmount(amount);
+                transaction.setType(transactionType);
+                transaction.setTimestamp(LocalDateTime.now());
+                return transactionRepository.save(transaction);
+            }
         } else {
             Transaction transaction = new Transaction();
             transaction.setUserName(userName);
