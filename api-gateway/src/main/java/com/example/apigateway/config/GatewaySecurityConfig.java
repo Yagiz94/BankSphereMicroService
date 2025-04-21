@@ -30,6 +30,8 @@ public class GatewaySecurityConfig {
                 .authorizeExchange(authz ->
                         authz
                                 .pathMatchers("/api/user/register").permitAll()
+                                // Allow access to the internal requests for authenticated users
+                                .pathMatchers("/api//account/validate/{accountId}", "/api/account/{accountId}/balance").hasAuthority("SVC:GATEWAY")
                                 .anyExchange().authenticated())
                 // Add the custom JWT authentication filter to the chain at the authentication phase.
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
