@@ -17,7 +17,7 @@ public class GatewaySecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, JwtFilter jwtFilter) {
         return http
                 // Disable CSRF for stateless APIs
-                .csrf(csrf -> csrf.disable())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 // Configure exception handling to return 401 Unauthorized
                 .exceptionHandling(exceptions ->
                         exceptions.authenticationEntryPoint((exchange, ex) -> {
@@ -31,7 +31,7 @@ public class GatewaySecurityConfig {
                         authz
                                 .pathMatchers("/api/user/register").permitAll()
                                 // Allow access to the internal requests for authenticated users
-                                .pathMatchers("/api//account/validate/{accountId}", "/api/account/{accountId}/balance").hasAuthority("SVC:GATEWAY")
+                                //.pathMatchers("/api//account/validate/{accountId}", "/api/account/{accountId}/balance").hasAuthority("SVC:GATEWAY")
                                 .anyExchange().authenticated())
                 // Add the custom JWT authentication filter to the chain at the authentication phase.
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
