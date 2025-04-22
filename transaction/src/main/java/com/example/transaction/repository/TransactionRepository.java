@@ -1,4 +1,3 @@
-// repository/TransactionRepository.java
 package com.example.transaction.repository;
 
 import com.example.transaction.model.Transaction;

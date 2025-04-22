@@ -1,6 +1,6 @@
 package com.example.transaction.config;
 
-import com.example.common.events.TransactionEvent;
+import com.example.transaction.events.TransactionEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;

@@ -1,11 +1,11 @@
 package com.example.account.service;
 
 import com.example.account.dto.AccountDto;
+import com.example.account.enums.TRANSACTION_TYPE;
 import com.example.account.exception.AccountNotFoundException;
 import com.example.account.exception.InsufficientFundException;
 import com.example.account.model.Account;
 import com.example.account.repository.AccountRepository;
-import com.example.common.enums.TRANSACTION_TYPE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

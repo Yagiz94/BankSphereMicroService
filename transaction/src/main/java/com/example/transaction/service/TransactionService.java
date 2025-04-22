@@ -1,6 +1,6 @@
 package com.example.transaction.service;
 
-import com.example.common.enums.TRANSACTION_TYPE;
+import com.example.transaction.enums.TRANSACTION_TYPE;
 import com.example.transaction.exception.AccountNotFoundException;
 import com.example.transaction.exception.InsufficientFundException;
 import com.example.transaction.model.Transaction;

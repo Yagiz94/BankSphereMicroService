@@ -1,7 +1,7 @@
 // entity/Transaction.java
 package com.example.transaction.model;
 
-import com.example.common.enums.TRANSACTION_TYPE;
+import com.example.transaction.enums.TRANSACTION_TYPE;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

@@ -1,5 +1,4 @@
 package com.example.apigateway.config;
-// config/RedisConfig.java
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

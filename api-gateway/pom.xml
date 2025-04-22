@@ -12,9 +12,6 @@
     <description>API Gateway for BankSphere Microservices</description>
     <packaging>jar</packaging>
 
-    <properties>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -26,7 +23,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 
     <dependencies>
         <dependency>

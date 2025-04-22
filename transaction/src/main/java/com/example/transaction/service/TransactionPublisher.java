@@ -1,8 +1,8 @@
 package com.example.transaction.service;
 
-import com.example.common.enums.TRANSACTION_TYPE;
-import com.example.common.events.TransactionEvent;
 import com.example.transaction.config.KafkaProducerConfig;
+import com.example.transaction.enums.TRANSACTION_TYPE;
+import com.example.transaction.events.TransactionEvent;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 

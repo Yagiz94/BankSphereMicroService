@@ -1,6 +1,6 @@
 package com.example.transaction.controller;
 
-import com.example.common.events.TransactionEvent;
+import com.example.transaction.events.TransactionEvent;
 import com.example.transaction.model.Transaction;
 import com.example.transaction.service.TransactionPublisher;
 import com.example.transaction.service.TransactionService;
