@@ -1,6 +1,6 @@
 package com.example.transaction.controller;
 
-import com.example.transaction.events.TransactionEvent;
+import com.example.common.events.TransactionEvent;
 import com.example.transaction.model.Transaction;
 import com.example.transaction.service.TransactionPublisher;
 import com.example.transaction.service.TransactionService;
@@ -31,7 +31,7 @@ public class TransactionController {
     }
 
     @GetMapping("{accountId}/all")
-    public ResponseEntity<?> getAllTransactions(@RequestParam Long accountId) {
+    public ResponseEntity<?> getAllTransactions(@PathVariable Long accountId) {
         return ResponseEntity.ok(transactionService.getAllTransactions(accountId));
     }
 }

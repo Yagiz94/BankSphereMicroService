@@ -1,6 +1,6 @@
 package com.example.account.config;
 
-import com.example.account.events.TransactionEvent;
+import com.example.common.events.TransactionEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;

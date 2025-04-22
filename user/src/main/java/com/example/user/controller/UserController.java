@@ -8,11 +8,11 @@ import com.example.user.exception.UserFieldsMissingException;
 import com.example.user.exception.UserLoginCredentialsInvalidException;
 import com.example.user.exception.UserNotFoundException;
 import com.example.user.model.User;
-import com.example.user.model.UserLogger;
+//import com.example.user.model.UserLogger;
 import com.example.user.model.UserResponse;
 import com.example.user.service.AuthService;
 import com.example.user.service.JwtRedisService;
-import com.example.user.service.UserLoggerService;
+//import com.example.user.service.UserLoggerService;
 import com.example.user.service.UserService;
 import com.mongodb.MongoSocketException;
 import io.jsonwebtoken.Jwts;
@@ -35,8 +35,8 @@ public class UserController {
     @Autowired
     private AuthService userAuthService;
 
-    @Autowired
-    private UserLoggerService userLoggerService;
+//    @Autowired
+//    private UserLoggerService userLoggerService;
 
     @Autowired
     private JwtRedisService jwtRedisService; // Inject the service
@@ -62,12 +62,12 @@ public class UserController {
         } catch (RuntimeException e) {
             throw new UserAlreadyExistsException("User already exists!");
         }
-        try {
-            userLoggerService.saveUserLogger(
-                    new UserLogger(user.getUsername(), user.getEmail(), Instant.now().toString(), "New User"));
-        } catch (MongoSocketException e) {
-            System.out.println("Something went wrong with logging but user registration is successful");
-        }
+//        try {
+//            userLoggerService.saveUserLogger(
+//                    new UserLogger(user.getUsername(), user.getEmail(), Instant.now().toString(), "New User"));
+//        } catch (MongoSocketException e) {
+//            System.out.println("Something went wrong with logging but user registration is successful");
+//        }
 
         // Generate a token
         String jwtToken = generateToken(user.getUsername());

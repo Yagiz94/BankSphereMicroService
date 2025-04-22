@@ -1,4 +1,3 @@
-// repository/AccountRepository.java
 package com.example.account.repository;
 
 import com.example.account.model.Account;

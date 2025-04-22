@@ -1,6 +1,7 @@
 package com.example.transaction.dto;
 
-import com.example.transaction.enums.TRANSACTION_TYPE;
+
+import com.example.common.enums.TRANSACTION_TYPE;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

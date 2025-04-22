@@ -1,4 +1,3 @@
-// exception/GlobalExceptionHandler.java
 package com.example.transaction.exception;
 
 import org.springframework.http.HttpStatus;
