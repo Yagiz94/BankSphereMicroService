@@ -94,13 +94,14 @@ public class UserController {
 
     // Login endpoint would typically validate credentials and return a JWT token.
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestBody UserRequestDto userDto) {
+    public ResponseEntity<UserResponse> login(@RequestHeader(name="userName") String userNameFromToken, @RequestBody UserRequestDto userDto) {
 
         //Validate the login credentials
         User user = userAuthService.retrieveUserByName(userDto.getUsername());
 
-        //Check whether the user exists
-        if (user == null) {
+        // Check whether the user exists and check whether the token belongs to that user
+        if (user == null || !user.getUsername().equals(userNameFromToken)) {
+            System.out.println("\nUserName from request " + user.getUsername() + "\nUser name from sent token " + userNameFromToken);
             throw new UserNotFoundException("User not found!");
         }
 
