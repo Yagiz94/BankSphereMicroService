@@ -74,7 +74,7 @@
         <version>3.5.2</version>
         <configuration>
           <!-- this tells Surefire to never run tests -->
-          <skipTests>true</skipTests>
+<!--          <skipTests>true</skipTests>-->
         </configuration>
       </plugin>
     </plugins>
