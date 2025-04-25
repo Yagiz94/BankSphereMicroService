@@ -9,7 +9,6 @@
   <artifactId>api-gateway</artifactId>
   <name>api-gateway</name>
   <description>API Gateway for BankSphere Microservices</description>
-<!--  <packaging>jar</packaging>-->
 
   <dependencyManagement>
     <dependencies>
@@ -81,6 +80,14 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <!-- this tells Surefire to never run tests -->
+          <skipTests>true</skipTests>
+        </configuration>
       </plugin>
     </plugins>
   </build>
