@@ -8,10 +8,9 @@
   <parent>
     <groupId>com.example</groupId>
     <artifactId>BankSphereMicroService</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-
   <artifactId>common</artifactId>
   <packaging>jar</packaging>
   <name>common-library</name>
@@ -21,6 +20,8 @@
     <java.version>17</java.version>
     <!-- skip tests if you have none here -->
     <maven.test.skip>true</maven.test.skip>
+    <!-- skip the repackage goal so we get a plain jar -->
+    <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
   </properties>
 
   <dependencies>
