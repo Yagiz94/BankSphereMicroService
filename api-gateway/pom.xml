@@ -9,7 +9,7 @@
   <artifactId>api-gateway</artifactId>
   <name>api-gateway</name>
   <description>API Gateway for BankSphere Microservices</description>
-  <packaging>jar</packaging>
+<!--  <packaging>jar</packaging>-->
 
   <dependencyManagement>
     <dependencies>

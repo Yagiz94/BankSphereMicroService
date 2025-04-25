@@ -12,14 +12,14 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>common</artifactId>
-  <packaging>jar</packaging>
+<!--  <packaging>jar</packaging>-->
   <name>common-library</name>
   <description>Shared DTOs and enums for all services</description>
 
   <properties>
     <java.version>17</java.version>
     <!-- skip tests if you have none here -->
-    <maven.test.skip>true</maven.test.skip>
+<!--    <maven.test.skip>true</maven.test.skip>-->
     <!-- skip the repackage goal so we get a plain jar -->
     <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
   </properties>
