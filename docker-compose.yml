@@ -1,0 +1,119 @@
+version: '3.8'
+services:
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - '2181:2181'
+
+  kafka:
+    image: bitnami/kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - '9092:9092'
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+
+  mysql-user:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: user
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
+    ports:
+      - '33061:3306'
+
+  mysql-account:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: account
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
+    ports:
+      - '33062:3306'
+
+  mysql-transaction:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: transaction
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
+    ports:
+      - '33063:3306'
+
+  api-gateway:
+    build: ./api-gateway
+    image: api-gateway:latest
+    ports:
+      - '8080:8080'
+    depends_on:
+      - user-service
+      - account-service
+      - transaction-service
+      - redis
+    environment:
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+
+  user-service:
+    build: ./user
+    image: user-service:latest
+    expose:
+      - '8081'
+    depends_on:
+      - mysql-user
+      - redis
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/user
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+
+  account-service:
+    build: ./account
+    image: account-service:latest
+    expose:
+      - '8082'
+    depends_on:
+      - mysql-account
+      - kafka
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/account
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=account-service
+
+  transaction-service:
+    build: ./transaction
+    image: transaction-service:latest
+    expose:
+      - '8083'
+    depends_on:
+      - mysql-transaction
+      - kafka
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/transaction
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+#      - SPRING_KAFKA_PRODUCER_PROPERTIES_spring_json_add_type_headers=false
+
+networks:
+  default:
+    driver: bridge
