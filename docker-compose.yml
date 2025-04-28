@@ -13,11 +13,20 @@ services:
     depends_on:
       - zookeeper
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - ALLOW_PLAINTEXT_LISTENER=yes
+      # KRaft mode roles & IDs
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      # ⚠️ Listen on all interfaces; controller on 9093
+      KAFKA_CFG_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      # ⚠️ Advertise back to clients as "kafka:9092"
+      KAFKA_CFG_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      # ⚠️ Protocol map (must match listener names)
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      # ⚠️ Which listener the controller uses
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      # allow plaintext in dev
+      ALLOW_PLAINTEXT_LISTENER: "yes"
     ports:
       - '9092:9092'
     networks:
@@ -83,14 +92,16 @@ services:
     image: api-gateway:latest
     ports:
       - '8080:8080'
+    volumes:
+      - ./api-gateway/src/main/resources/application.yml:/config/application.yml:ro
     depends_on:
       - user-service
       - account-service
       - transaction-service
       - redis
     environment:
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     networks:
       - internal
 
@@ -106,8 +117,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-user:3306/banksphere_user
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     networks:
       - internal
 
