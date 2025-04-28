@@ -8,13 +8,10 @@ import com.example.user.exception.UserFieldsMissingException;
 import com.example.user.exception.UserLoginCredentialsInvalidException;
 import com.example.user.exception.UserNotFoundException;
 import com.example.user.model.User;
-//import com.example.user.model.UserLogger;
 import com.example.user.model.UserResponse;
 import com.example.user.service.AuthService;
 import com.example.user.service.JwtRedisService;
-//import com.example.user.service.UserLoggerService;
 import com.example.user.service.UserService;
-import com.mongodb.MongoSocketException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Key;
-import java.time.Instant;
 import java.util.*;
 
 @RestController
@@ -94,7 +90,7 @@ public class UserController {
 
     // Login endpoint would typically validate credentials and return a JWT token.
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestHeader(name="userName") String userNameFromToken, @RequestBody UserRequestDto userDto) {
+    public ResponseEntity<UserResponse> login(@RequestHeader(name = "userName") String userNameFromToken, @RequestBody UserRequestDto userDto) {
 
         //Validate the login credentials
         User user = userAuthService.retrieveUserByName(userDto.getUsername());
