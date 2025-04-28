@@ -1,0 +1,43 @@
+##########################################################################
+# WE NEED TO RE-EVALUATE AND TEST THIS CONFIGURATION FILE FOR ANY CHANGES
+
+# 1. routes for microservices: uri, predicate, filter
+# 2. security: oauth2 and jwt server if there is any URL --> we have JWT in doFilter and we don't need OAuth2 server, it is open to discussion
+# 3. server and logging modes: DEBUG, INFO
+# 4. additional configuration if needed
+##########################################################################
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        # API Gateway route for the User microservice
+        # Requests matching /users/** will be forwarded to http://localhost:8081
+        - id: user
+          uri: http://user-service:8081  # Destination User service URL
+          predicates:
+            - Path=/api/user/**  # Only routes requests that start with /user/
+
+        # API Gateway route for the Account microservice
+        # Requests matching /accounts/** will be forwarded to http://localhost:8082
+        - id: account
+          uri: http://account-service:8082  # Destination Account service URL
+          predicates:
+            - Path=/api/account/**  # Only routes requests that start with /accounts/
+
+
+        # API Gateway route for the Transaction microservice
+        # Requests matching /transactions/** will be forwarded to http://localhost:8083
+        - id: transaction
+          uri: http://transaction-service:8083  # Destination Transaction service URL
+          predicates:
+            - Path=/api/transaction/**  # Only routes requests that start with /transactions/
+
+# Server settings
+server:
+  uri: http://api-gateway:8080  # API Gateway URL
+# Logging configuration
+logging:
+  level:
+    org.springframework.security: DEBUG  # Set logging level for com.example package
+    org.springframework.cloud.gateway: DEBUG  # Set logging level for Spring Cloud Gateway
