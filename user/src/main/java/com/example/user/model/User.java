@@ -1,4 +1,3 @@
-// entity/User.java
 package com.example.user.model;
 
 import com.example.user.enums.KYC_STATUS;
