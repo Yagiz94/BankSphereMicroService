@@ -1,8 +1,19 @@
+version: "3.9"
 services:
   zookeeper:
     image: bitnami/zookeeper:latest
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/bitnami/zookeeper/bin/zkServer.sh",
+          "status"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - '2181:2181'
     networks:
@@ -11,7 +22,8 @@ services:
   kafka:
     image: bitnami/kafka:latest
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     environment:
       # KRaft mode roles & IDs
       KAFKA_CFG_PROCESS_ROLES: "broker,controller"
@@ -27,6 +39,18 @@ services:
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       # allow plaintext in dev
       ALLOW_PLAINTEXT_LISTENER: "yes"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/bitnami/kafka/bin/kafka-broker-api-versions.sh",
+          "--bootstrap-server",
+          "kafka:9092"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     ports:
       - '9092:9092'
     networks:
@@ -36,6 +60,12 @@ services:
     image: redis:7-alpine
     ports:
       - '6379:6379'
+    healthcheck:
+      # Official redis image includes `redis-cli`
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - internal
 
@@ -95,13 +125,14 @@ services:
     volumes:
       - ./api-gateway/src/main/resources/application.yml:/config/application.yml:ro
     depends_on:
-      - user-service
-      - account-service
-      - transaction-service
-      - redis
-    environment:
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
+      redis:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+      account-service:
+        condition: service_healthy
+      transaction-service:
+        condition: service_healthy
     networks:
       - internal
 
@@ -111,14 +142,19 @@ services:
     expose:
       - '8081'
     depends_on:
-      - mysql-user
-      - redis
+      mysql-user:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-qS", "--spider", "http://localhost:8081/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-user:3306/banksphere_user
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
     networks:
       - internal
 
@@ -128,8 +164,15 @@ services:
     expose:
       - '8082'
     depends_on:
-      - mysql-account
-      - kafka
+      mysql-account:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-qS", "--spider", "http://localhost:8082/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-account:3306/banksphere_account
       - SPRING_DATASOURCE_USERNAME=user
@@ -145,8 +188,15 @@ services:
     expose:
       - '8083'
     depends_on:
-      - mysql-transaction
-      - kafka
+      mysql-transaction:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-qS", "--spider", "http://localhost:8083/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-transaction:3306/banksphere_transaction
       - SPRING_DATASOURCE_USERNAME=user
