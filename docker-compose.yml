@@ -147,9 +147,8 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "wget", "-qS", "--spider", "http://localhost:8081/actuator/health" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1" ]
       interval: 10s
-      timeout: 5s
       retries: 5
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-user:3306/banksphere_user
@@ -169,9 +168,8 @@ services:
       kafka:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "wget", "-qS", "--spider", "http://localhost:8082/actuator/health" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1" ]
       interval: 10s
-      timeout: 5s
       retries: 5
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-account:3306/banksphere_account
@@ -193,9 +191,8 @@ services:
       kafka:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "wget", "-qS", "--spider", "http://localhost:8083/actuator/health" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8083/actuator/health || exit 1" ]
       interval: 10s
-      timeout: 5s
       retries: 5
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-transaction:3306/banksphere_transaction

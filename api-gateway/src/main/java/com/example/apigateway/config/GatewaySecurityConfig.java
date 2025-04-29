@@ -30,6 +30,7 @@ public class GatewaySecurityConfig {
                 .authorizeExchange(authz ->
                         authz
                                 .pathMatchers("/api/user/register").permitAll()
+                                .pathMatchers("/actuator/health").permitAll() // permit for service health checks
                                 // Allow access to the internal requests for authenticated users
                                 //.pathMatchers("/api//account/validate/{accountId}", "/api/account/{accountId}/balance").hasAuthority("SVC:GATEWAY")
                                 .anyExchange().authenticated())
