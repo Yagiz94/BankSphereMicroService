@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   zookeeper:
     image: bitnami/zookeeper:latest
@@ -57,9 +56,13 @@ services:
       - internal
 
   redis:
-    image: redis:7-alpine
+    container_name: redis
+    hostname: redis
+    image: redis:7.4.2
+    command:
+      - redis-server
     ports:
-      - '6379:6379'
+      - '16379:6379'
     healthcheck:
       # Official redis image includes `redis-cli`
       test: [ "CMD", "redis-cli", "ping" ]
@@ -127,12 +130,9 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-      user-service:
-        condition: service_healthy
-      account-service:
-        condition: service_healthy
-      transaction-service:
-        condition: service_healthy
+    environment:
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     networks:
       - internal
 
@@ -146,14 +146,25 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1" ]
-      interval: 10s
-      retries: 5
+    #    healthcheck:
+    #      #      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+    #      interval: 10s
+    #      timeout: 5s
+    #      retries: 5
+    #      test:
+    #        [
+    #          "CMD",
+    #          "/bin/sh",
+    #          "-c",
+    #          "curl -f http://localhost:8081/actuator/health || exit 1"
+    #        ]
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-user:3306/banksphere_user
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     networks:
       - internal
 
@@ -167,16 +178,27 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1" ]
-      interval: 10s
-      retries: 5
+    #    healthcheck:
+    #      #      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+    #      interval: 10s
+    #      timeout: 5s
+    #      retries: 5
+    #      test:
+    #        [
+    #          "CMD",
+    #          "/bin/sh",
+    #          "-c",
+    #          "curl -f http://localhost:8082/actuator/health || exit 1"
+    #        ]
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-account:3306/banksphere_account
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS=kafka:9092
       - SPRING_KAFKA_CONSUMER_GROUP_ID=account-service
+      # make Tomcat bind on 0.0.0.0
+      - SERVER_ADDRESS=0.0.0.0
     networks:
       - internal
 
@@ -190,15 +212,25 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8083/actuator/health || exit 1" ]
-      interval: 10s
-      retries: 5
+    #    healthcheck:
+    #      #      test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
+    #      interval: 10s
+    #      timeout: 5s
+    #      retries: 5
+    #      test:
+    #        [
+    #          "CMD",
+    #          "/bin/sh",
+    #          "-c",
+    #          "curl -f http://localhost:8083/actuator/health || exit 1"
+    #        ]
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-transaction:3306/banksphere_transaction
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_PRODUCER_BOOTSTRAP_SERVERS=kafka:9092
+      - SERVER_ADDRESS=0.0.0.0
     networks:
       - internal
 networks:
