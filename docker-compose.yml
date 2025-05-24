@@ -28,13 +28,13 @@ services:
       KAFKA_CFG_PROCESS_ROLES: "broker,controller"
       KAFKA_CFG_NODE_ID: "1"
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
-      # ⚠️ Listen on all interfaces; controller on 9093
+      # Listen on all interfaces; controller on 9093
       KAFKA_CFG_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      # ⚠️ Advertise back to clients as "kafka:9092"
+      # Advertise back to clients as "kafka:9092"
       KAFKA_CFG_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
-      # ⚠️ Protocol map (must match listener names)
+      # Protocol map (must match listener names)
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
-      # ⚠️ Which listener the controller uses
+      # Which listener the controller uses
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       # allow plaintext in dev
       ALLOW_PLAINTEXT_LISTENER: "yes"
