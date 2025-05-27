@@ -60,11 +60,11 @@ services:
   redis:
     container_name: redis
     hostname: redis
-    image: redis:7-alpine
+    image: redis:7.4.2
     command:
       - redis-server
     ports:
-      - '6379:6379'
+      - '16379:6379'
     healthcheck:
       # Official redis image includes `redis-cli`
       test: [ "CMD", "redis-cli", "ping" ]
