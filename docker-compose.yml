@@ -1,5 +1,6 @@
 services:
   zookeeper:
+    container_name: zookeeper
     image: bitnami/zookeeper:latest
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -19,6 +20,7 @@ services:
       - internal
 
   kafka:
+    container_name: kafka
     image: bitnami/kafka:latest
     depends_on:
       zookeeper:
@@ -58,11 +60,11 @@ services:
   redis:
     container_name: redis
     hostname: redis
-    image: redis:7.4.2
+    image: redis:7-alpine
     command:
       - redis-server
     ports:
-      - '16379:6379'
+      - '6379:6379'
     healthcheck:
       # Official redis image includes `redis-cli`
       test: [ "CMD", "redis-cli", "ping" ]
@@ -73,6 +75,7 @@ services:
       - internal
 
   mysql-user:
+    container_name: mysql-user
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -89,6 +92,7 @@ services:
       - internal
 
   mysql-account:
+    container_name: mysql-account
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -105,6 +109,7 @@ services:
       - internal
 
   mysql-transaction:
+    container_name: mysql-transaction
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -121,8 +126,11 @@ services:
       - internal
 
   api-gateway:
-    build: ./api-gateway
-    image: api-gateway:latest
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    #    image: api-gateway:latest
     ports:
       - '8080:8080'
     volumes:
@@ -131,14 +139,17 @@ services:
       redis:
         condition: service_healthy
     environment:
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
     networks:
       - internal
 
   user-service:
-    build: ./user
-    image: user-service:latest
+    container_name: user-service
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    #    image: user-service:latest
     expose:
       - '8081'
     depends_on:
@@ -163,14 +174,17 @@ services:
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
       - SERVER_ADDRESS=0.0.0.0
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
     networks:
       - internal
 
   account-service:
-    build: ./account
-    image: account-service:latest
+    container_name: account-service
+    build:
+      context: ./account
+      dockerfile: Dockerfile
+    #    image: account-service:latest
     expose:
       - '8082'
     depends_on:
@@ -203,8 +217,11 @@ services:
       - internal
 
   transaction-service:
-    build: ./transaction
-    image: transaction-service:latest
+    container_name: transaction-service
+    build:
+      context: ./transaction
+      dockerfile: Dockerfile
+    #    image: transaction-service:latest
     expose:
       - '8083'
     depends_on:
