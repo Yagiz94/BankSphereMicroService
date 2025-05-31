@@ -2,7 +2,7 @@
 # WE NEED TO RE-EVALUATE AND TEST THIS CONFIGURATION FILE FOR ANY CHANGES
 
 # 1. routes for microservices: uri, predicate, filter
-# 2. security: oauth2 and jwt server if there is any URL --> we have JWT in doFilter and we don't need OAuth2 server, it is open to discussion
+# 2. security: oauth2 and jwt server if there is any URL --> we have JWT in doFilter, and we don't need OAuth2 server, it is open to discussion
 # 3. server and logging modes: DEBUG, INFO
 # 4. additional configuration if needed
 ##########################################################################
@@ -29,6 +29,10 @@ spring:
           uri: http://transaction-service:8083  # Destination Transaction service URL
           predicates:
             - Path=/api/transaction/**  # Only routes requests that start with /transactions/
+  data:
+    redis:
+      host: redis # Use the service name as the hostname for Docker Compose
+      port: 6379  # Use the internal container port
 
 # Server settings
 server:
