@@ -2,9 +2,11 @@
 
 BankSphereMicroService
 
+
 A microservices-based banking application built with Spring Boot, Spring Cloud Gateway, Apache Kafka, Redis, MySQL, and Docker Compose. Each module (User, api-gateway Account, Transaction) is containerized and communicates over an internal Docker network. All services are orchestrated via Docker Compose, demonstrating a scalable, event-driven architecture.
 
 Project Overview
+
 BankSphereMicroService is a demonstration of a Dockerized microservices architecture for a simplified banking platform. It consists of:
 
   API Gateway: Routes external requests to internal microservices and applies security filters (JWT).
