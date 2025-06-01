@@ -44,7 +44,7 @@ public class TransactionService {
         headers.set("Authorization", authHeader);
         HttpEntity<?> request = new HttpEntity<>(headers);
         ResponseEntity<?> response = restTemplate.exchange(
-                "http://localhost:8080/api/account/validate/{accountId}",
+                "http://api-gateway:8080/api/account/validate/{accountId}",
                 HttpMethod.GET,
                 request,
                 Object.class,
@@ -71,7 +71,7 @@ public class TransactionService {
             HttpEntity<?> request2 = new HttpEntity<>(headers2);
 
             ResponseEntity<BigDecimal> response2 = restTemplate.exchange(
-                    "http://localhost:8080/api/account/{accountId}/balance",
+                    "http://api-gateway:8080/api/account/{accountId}/balance",
                     HttpMethod.GET,
                     request2,
                     BigDecimal.class,
