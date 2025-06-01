@@ -25,11 +25,12 @@ BankSphereMicroService is a demonstration of a Dockerized microservices architec
 
   Docker Compose: Orchestrates all containers on a single Docker network (internal), handling ordered startup, healthchecks, and service discovery.
 
+![system diagram](https://github.com/user-attachments/assets/fc4032be-5671-4392-acec-8aff0aaaa118)
 
-![Screenshot (12)](https://github.com/user-attachments/assets/91a89cae-526c-4dd9-98c5-c6f40a3f9b5c)
+
 
 Additional Datastores:
- - Redis (caching JWT secrets, session info)
+ - Redis (caching JWT secrets)
  - MySQL instances (one per service):
     • banksphere_user  
     • banksphere_account  
