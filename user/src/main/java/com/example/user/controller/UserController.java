@@ -88,7 +88,7 @@ public class UserController {
 
         // Check whether the user exists and check whether the token belongs to that user
         if (user == null || user.getUsername() == null || !user.getUsername().equals(userNameFromToken)) {
-            System.out.println("\nUser not found!");
+            System.out.println("User not found!");
             throw new UserNotFoundException("User not found!");
         }
 
