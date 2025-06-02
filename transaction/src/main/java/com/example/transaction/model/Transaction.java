@@ -30,9 +30,6 @@ public class Transaction {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-//    @Column(nullable = false)
-//    private String status; // Status: SUCCESS, PENDING, FAILED, etc.
-
     // Getters and Setters
 
     public String getUserName() {

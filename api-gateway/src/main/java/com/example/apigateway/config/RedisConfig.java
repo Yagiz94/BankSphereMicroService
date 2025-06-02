@@ -23,7 +23,7 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        // CORRECTED: Initialize LettuceConnectionFactory with host and port from properties
+        // Initialize LettuceConnectionFactory with host and port from properties
         return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
     }
 

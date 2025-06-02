@@ -31,9 +31,6 @@ public class UserController {
     @Autowired
     private AuthService userAuthService;
 
-//    @Autowired
-//    private UserLoggerService userLoggerService;
-
     @Autowired
     private JwtRedisService jwtRedisService; // Inject the service
 
@@ -58,12 +55,6 @@ public class UserController {
         } catch (RuntimeException e) {
             throw new UserAlreadyExistsException("User already exists!");
         }
-//        try {
-//            userLoggerService.saveUserLogger(
-//                    new UserLogger(user.getUsername(), user.getEmail(), Instant.now().toString(), "New User"));
-//        } catch (MongoSocketException e) {
-//            System.out.println("Something went wrong with logging but user registration is successful");
-//        }
 
         // Generate a token
         String jwtToken = generateToken(user.getUsername());
@@ -79,7 +70,7 @@ public class UserController {
                 "\t\"token\": \"" + jwtToken + "\"\n}");
     }
 
-    // check missing JSON attributes (fields)
+    // Check missing JSON attributes (fields)
     private String getMissingFields(UserRequestDto userDto) {
         List<String> missingFields = new ArrayList<>();
         if (userDto.getUsername() == null) missingFields.add("username");
@@ -96,8 +87,8 @@ public class UserController {
         User user = userAuthService.retrieveUserByName(userDto.getUsername());
 
         // Check whether the user exists and check whether the token belongs to that user
-        if (user == null || !user.getUsername().equals(userNameFromToken)) {
-            System.out.println("\nUserName from request " + user.getUsername() + "\nUser name from sent token " + userNameFromToken);
+        if (user == null || user.getUsername() == null || !user.getUsername().equals(userNameFromToken)) {
+            System.out.println("\nUser not found!");
             throw new UserNotFoundException("User not found!");
         }
 
