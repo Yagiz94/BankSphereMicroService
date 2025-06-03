@@ -26,7 +26,7 @@ import java.util.Base64;
 import java.util.Collections;
 
 @Component
-@Order(-200) // Ensure it runs very early in the filter chain
+@Order(-200) // Ensure the JwtFilter runs very early in the filter chain
 public class JwtFilter implements WebFilter {
 
     private final JwtRedisService jwtRedisService;

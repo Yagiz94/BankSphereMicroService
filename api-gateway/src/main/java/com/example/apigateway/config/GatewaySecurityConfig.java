@@ -31,8 +31,6 @@ public class GatewaySecurityConfig {
                         authz
                                 .pathMatchers("/api/user/register").permitAll()
                                 .pathMatchers("/actuator/health").permitAll() // permit for service health checks
-                                // Allow access to the internal requests for authenticated users
-                                //.pathMatchers("/api//account/validate/{accountId}", "/api/account/{accountId}/balance").hasAuthority("SVC:GATEWAY")
                                 .anyExchange().authenticated())
                 // Add the custom JWT authentication filter to the chain at the authentication phase.
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
