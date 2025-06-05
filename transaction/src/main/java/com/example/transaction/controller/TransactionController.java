@@ -4,6 +4,8 @@ import com.example.common.events.TransactionEvent;
 import com.example.transaction.model.Transaction;
 import com.example.transaction.service.TransactionPublisher;
 import com.example.transaction.service.TransactionService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ public class TransactionController {
     private TransactionService transactionService;
     @Autowired
     private TransactionPublisher transactionPublisher;
+    private static final Logger logger = LogManager.getLogger(TransactionController.class);
+
 
     @PostMapping("/process")
     public ResponseEntity<Transaction> processTransaction(
@@ -25,6 +29,7 @@ public class TransactionController {
 
         Transaction transaction = transactionService.processTransaction(userName, transactionEvent.getAccountId(), transactionEvent.getAmount(), transactionEvent.getTransactionType());
         transactionPublisher.publish(userName, transactionEvent.getAccountId(), transactionEvent.getAmount(), transactionEvent.getTransactionType());
+        logger.info("Transaction completed.");
         return ResponseEntity.ok(transaction);
     }
 

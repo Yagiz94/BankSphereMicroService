@@ -6,6 +6,8 @@ import com.example.account.exception.InsufficientFundException;
 import com.example.account.model.Account;
 import com.example.account.repository.AccountRepository;
 import com.example.common.enums.TRANSACTION_TYPE;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ public class AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+    private static final Logger logger = LogManager.getLogger(AccountService.class);
+
 
     public List<AccountDto> getAllAccounts(String userName) {
         // Find the user by ID
@@ -67,6 +71,7 @@ public class AccountService {
         }
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
+        logger.info("Account update successfully");
     }
 
     public BigDecimal getAccountBalance(String userName, Long accountId) {
