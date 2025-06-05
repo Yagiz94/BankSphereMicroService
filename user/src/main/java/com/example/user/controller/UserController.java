@@ -69,7 +69,7 @@ public class UserController {
 
         // Save the secret key in Redis
         jwtRedisService.saveSecretKey(user.getUsername(), secretKeyBase64);
-
+        logger.info("User registration completed.");
         return ResponseEntity.ok("{\n" +
                 "\t\"message\": \"User registered successfully!\"" + "\n" +
                 "\t\"token\": \"" + jwtToken + "\"\n}");

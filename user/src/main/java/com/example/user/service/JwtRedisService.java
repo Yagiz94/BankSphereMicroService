@@ -19,7 +19,7 @@ public class JwtRedisService {
     public void saveSecretKey(String userName, String secretKey) {
         // Use token as key and username (or any identifier) as value
         redisTemplate.opsForValue().set(userName, secretKey);
-        logger.info(userName + " secret key saved to redis database");
+        logger.info("Secret key saved to redis database for " + userName);
     }
 
     /**
