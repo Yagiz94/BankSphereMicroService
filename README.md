@@ -25,7 +25,7 @@ BankSphereMicroService is a demonstration of a Dockerized microservices architec
 
   Docker Compose: Orchestrates all containers on a single Docker network (internal), handling ordered startup, healthchecks, and service discovery.
   
-  Log4j is used to log important operations in the application. Seperate Log files for each service are generated and processed under logs folder.
+  Log4j is used to log important operations in the application. Seperate log files are generated and processed for each service, under the logs folder.
 
 ![system diagram](https://github.com/user-attachments/assets/fc4032be-5671-4392-acec-8aff0aaaa118)
 
