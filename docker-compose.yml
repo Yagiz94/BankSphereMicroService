@@ -152,6 +152,8 @@ services:
     #    image: user-service:latest
     expose:
       - '8081'
+    volumes:
+      - ./logs/user:/logs/user
     depends_on:
       mysql-user:
         condition: service_healthy

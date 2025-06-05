@@ -1,8 +1,8 @@
-// service/UserService.java
 package com.example.user.service;
 
 import com.example.user.dto.UserRequestDto;
 import com.example.user.enums.KYC_STATUS;
+import com.example.user.exception.UserAlreadyExistsException;
 import com.example.user.model.User;
 import com.example.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class AuthService {
 
         // Verify if the user already exists before registering a new user
         if (checkUserExists(user)) {
-            throw new RuntimeException("The user already exists");
+            throw new UserAlreadyExistsException("The user already exists");
         }
 
         // Register the user

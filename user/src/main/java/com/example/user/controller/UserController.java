@@ -14,6 +14,8 @@ import com.example.user.service.JwtRedisService;
 import com.example.user.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +36,14 @@ public class UserController {
     @Autowired
     private JwtRedisService jwtRedisService; // Inject the service
 
+    private static final Logger logger = LogManager.getLogger(UserController.class);
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRequestDto userDto) {
 
         // check if the request body is missing
         if (userDto == null) {
+            logger.error("Missing user request");
             return ResponseEntity.badRequest().body("Missing request body!");
         }
 
@@ -88,7 +93,6 @@ public class UserController {
 
         // Check whether the user exists and check whether the token belongs to that user
         if (user == null || user.getUsername() == null || !user.getUsername().equals(userNameFromToken)) {
-            System.out.println("User not found!");
             throw new UserNotFoundException("User not found!");
         }
 
@@ -97,6 +101,7 @@ public class UserController {
             throw new UserLoginCredentialsInvalidException("Invalid login credentials!");
         }
         // If everything is valid
+        logger.info("Login successful!");
         return ResponseEntity.ok(new UserResponse("Login successful!"));
     }
 
@@ -115,9 +120,6 @@ public class UserController {
                 .setIssuedAt(new Date())  // Correct way to set 'iat'
                 .signWith(secretKey)  // Base64.getEncoder().encodeToString(jwtToken.getBytes());Sign with user-specific secret key
                 .compact();
-
-        // Debug prints
-        System.out.println("Generated token: " + token);
         return token;
     }
 
@@ -137,6 +139,7 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@RequestHeader(value = "userName") String userName, @RequestBody AdminDto adminDto) {
         User requestUser = userService.getUserByUserName(userName);
         if (requestUser.getRole() != ROLE.ADMIN) {
+            logger.error("Authorization failed to delete a user");
             return ResponseEntity.badRequest().body("You are not authorized to delete a user");
         } else {
             User targetUser = userService.getUserById(Long.valueOf(adminDto.getTargetUserID().toString()));
@@ -144,7 +147,7 @@ public class UserController {
             userService.deleteUser(adminDto.getTargetUserID());
             // remove user token from Redis
             jwtRedisService.removeSecretKey(targetUser.getUsername());
-            System.out.println("User deleted successfully.");
+            logger.info("User deleted successfully.");
             return ResponseEntity.ok("User deleted successfully");
         }
     }
