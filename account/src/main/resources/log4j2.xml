@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d [%p] %c - %m%n"/>
+        </Console>
+        <RollingFile name="FileAppender"
+                     fileName="/logs/account/account.log"
+                     filePattern="/logs/account/account-%i.log.gz">
+            <!--      <JsonLayout compact="true" eventEol="true"-->
+            <!--                  includeTimeMillis="true"-->
+            <!--                  includeTimestamp="true"-->
+            <!--                  timestampFormat="yyyy-MM-dd'T'HH:mm:ss.SSSZ"/>-->
+            <PatternLayout pattern="%d [%p] %c - %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.example.account" level="info" additivity="false">
+            <AppenderRef ref="FileAppender"/>
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+        <Logger name="org.springframework" level="warn" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+        <Logger name="org.hibernate" level="warn" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+        <Logger name="org.apache.kafka" level="warn" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+        <Logger name="kafka" level="warn" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -189,6 +189,8 @@ services:
     #    image: account-service:latest
     expose:
       - '8082'
+    volumes:
+      - ./logs/account:/logs/account
     depends_on:
       mysql-account:
         condition: service_healthy
@@ -226,6 +228,8 @@ services:
     #    image: transaction-service:latest
     expose:
       - '8083'
+    volumes:
+      - ./logs/transaction:/logs/transaction
     depends_on:
       mysql-transaction:
         condition: service_healthy
