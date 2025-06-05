@@ -24,6 +24,8 @@ BankSphereMicroService is a demonstration of a Dockerized microservices architec
   Kafka & Zookeeper: Implements an event‐driven model; Transaction events are published to Kafka and consumed by Account Service.
 
   Docker Compose: Orchestrates all containers on a single Docker network (internal), handling ordered startup, healthchecks, and service discovery.
+  
+  Log4j is used to log important operations in the application. Seperate Log files for each service are generated and processed under logs folder.
 
 ![system diagram](https://github.com/user-attachments/assets/fc4032be-5671-4392-acec-8aff0aaaa118)
 
@@ -32,7 +34,8 @@ BankSphereMicroService is a demonstration of a Dockerized microservices architec
 Additional Datastores:
  - Redis (caching JWT secrets)
  - MySQL instances (one per service):
-    • banksphere_user  
+
+   • banksphere_user  
     • banksphere_account  
     • banksphere_transaction  
 
@@ -63,6 +66,10 @@ Technologies
 
   MySQL 8.x
 
+  Docker & Docker Compose (v3.9)
+
   Maven (build system)
 
-  Docker & Docker Compose (v3.9)
+  Log4j
+
+ 
