@@ -259,18 +259,21 @@ services:
 
   filebeat:
     image: docker.elastic.co/beats/filebeat:8.13.2
-    user: root  # Filebeat needs permissions for mounted logs
+    user: root
     volumes:
       - ./logs:/logs
       - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-    depends_on:
-      - api-gateway
-      - user-service
-      - account-service
-      - transaction-service
+    entrypoint:
+      - filebeat
+      - -e
+      - -c
+      - /usr/share/filebeat/filebeat.yml
+      - -strict.perms=false
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
+    depends_on:
+      - elasticsearch
     networks:
       - internal
 
@@ -278,7 +281,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false # for local dev, disables security
+      - xpack.security.enabled=false # for local dev
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9200:9200"

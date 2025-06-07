@@ -1,8 +1,34 @@
 filebeat.inputs:
   - type: filestream
-    id: all-logs
+    id: api-gateway-logs
     paths:
-      - /logs/*/*.log
+      - /logs/api-gateway/*.log
+    fields:
+      service.name: api-gateway
+    fields_under_root: true
 
+  - type: filestream
+    id: user-logs
+    paths:
+      - /logs/user/*.log
+    fields:
+    service.name: user-service
+    fields_under_root: true
+
+  - type: filestream
+    id: account-logs
+    paths:
+      - /logs/account/*.log
+    fields:
+      service.name: account-service
+    fields_under_root: true
+
+  - type: filestream
+    id: transaction-logs
+    paths:
+      - /logs/transaction/*.log
+    fields:
+    service.name: transaction-service
+    fields_under_root: true
 output.elasticsearch:
-  hosts: ["http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}"]
+  hosts: [ "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}" ]
