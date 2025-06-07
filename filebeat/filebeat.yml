@@ -1,0 +1,8 @@
+filebeat.inputs:
+  - type: filestream
+    id: all-logs
+    paths:
+      - /logs/*/*.log
+
+output.elasticsearch:
+  hosts: ["http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}"]
