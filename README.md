@@ -44,7 +44,7 @@ Logging & Monitoring
 To enable centralized log collection and analysis, Filebeat, Elasticsearch, and Kibana are integrated alongside the microservices:
 
 Filebeat: It is used for log shipment. It is implemented as a service inside the docker compose file. It tails service logs, and forwards them to Elasticsearch.
-In our setup, a Filebeat sidecar container is attached to each microservice; it watches ./logs/<service-name>/*.log and transmits entries to the central cluster.
+In our setup, a Filebeat sidecar container is attached to each microservice; it watches ./logs/service-name/*.log and transmits entries to the central cluster.
 
 Elasticsearch: All logs are indexed here, enabling fast full-text search, aggregations, and time-series analysis over your logs.
 
