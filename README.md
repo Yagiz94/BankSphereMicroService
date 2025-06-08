@@ -39,6 +39,25 @@ Additional Datastores:
     • banksphere_account  
     • banksphere_transaction  
 
+Logging & Monitoring
+
+To enable centralized log collection and analysis, Filebeat, Elasticsearch, and Kibana are integrated alongside the microservices:
+
+Filebeat: It is used for log shipment. It is implemented as a service inside the docker compose file. It tails service logs, and forwards them to Elasticsearch.
+In our setup, a Filebeat sidecar container is attached to each microservice; it watches ./logs/service-name/*.log and transmits entries to the central cluster.
+
+Elasticsearch: All logs are indexed here, enabling fast full-text search, aggregations, and time-series analysis over your logs.
+
+Kibana: A visualization front end for Elasticsearch. You can build dashboards, define alerts, and drill into logs by service, severity level, or time range.
+
+How It Works
+
+Microservices (User, Transaction, Account, API-Gateway) write logs to their local stdout or log files. (log4j is used)
+
+Filebeat (sidecar) collects and forwards these logs into Elasticsearch.
+
+Kibana connects to Elasticsearch to provide a UI for searching and visualizing logs.
+
 
 Technologies
 
