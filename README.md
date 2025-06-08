@@ -27,17 +27,6 @@ BankSphereMicroService is a demonstration of a Dockerized microservices architec
   
   Log4j is used to log important operations in the application. Seperate log files are generated and processed for each service, under the logs folder.
 
-![system diagram](https://github.com/user-attachments/assets/fc4032be-5671-4392-acec-8aff0aaaa118)
-
-
-
-Additional Datastores:
- - Redis (caching JWT secrets)
- - MySQL instances (one per service):
-
-   • banksphere_user  
-    • banksphere_account  
-    • banksphere_transaction  
 
 Logging & Monitoring
 
@@ -56,6 +45,17 @@ How It Works
   Filebeat (sidecar) collects and forwards these logs into Elasticsearch.
 
   Kibana connects to Elasticsearch to provide a UI for searching and visualizing logs.
+
+![system diagram](https://github.com/user-attachments/assets/fc4032be-5671-4392-acec-8aff0aaaa118)
+
+
+Additional Datastores:
+ - Redis (caching JWT secrets)
+ - MySQL instances (one per service):
+
+   • banksphere_user  
+    • banksphere_account  
+    • banksphere_transaction  
 
 
 Technologies
