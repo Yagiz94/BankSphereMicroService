@@ -12,7 +12,7 @@ filebeat.inputs:
     paths:
       - /logs/user/*.log
     fields:
-    service.name: user-service
+      service.name: user-service
     fields_under_root: true
 
   - type: filestream
@@ -28,7 +28,7 @@ filebeat.inputs:
     paths:
       - /logs/transaction/*.log
     fields:
-    service.name: transaction-service
+      service.name: transaction-service
     fields_under_root: true
 output.elasticsearch:
   hosts: [ "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}" ]
