@@ -25,10 +25,13 @@ BankSphereMicroService is a demonstration of a Dockerized microservices architec
 
   Docker Compose: Orchestrates all containers on a single Docker network (internal), handling ordered startup, healthchecks, and service discovery.
   
-  Log4j is used to log important operations in the application. Seperate log files are generated and processed for each service, under the logs folder.
+
+  ![system diagram](https://github.com/user-attachments/assets/fc4032be-5671-4392-acec-8aff0aaaa118)
 
 
 Logging & Monitoring
+
+  Log4j is used to log important operations in the application. Seperate log files are generated and processed for each service, under the logs folder.
 
   To enable centralized log collection and analysis, Filebeat, Elasticsearch, and Kibana are integrated alongside the microservices:
 
@@ -44,10 +47,11 @@ How It Works
 
   Filebeat (sidecar) collects and forwards these logs into Elasticsearch.
 
-  Kibana connects to Elasticsearch to provide a UI for searching and visualizing logs.
+  Kibana connects to Elasticsearch to provide a UI for searching and visualizing logs. 
+  
+  Note: Logs are grouped by service.name, via defining each service's log folder as a seperate filebeat input on filebeat.yml file.
 
-![system diagram](https://github.com/user-attachments/assets/fc4032be-5671-4392-acec-8aff0aaaa118)
-
+  ![Kibana](https://github.com/user-attachments/assets/2a5b1ca4-fa8d-48cb-9488-875970c29f2e)
 
 Additional Datastores:
  - Redis (caching JWT secrets)
