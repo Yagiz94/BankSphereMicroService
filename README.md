@@ -24,7 +24,14 @@ BankSphereMicroService is a demonstration of a Dockerized microservices architec
   Kafka & Zookeeper: Implements an event‐driven model; Transaction events are published to Kafka and consumed by Account Service.
 
   Docker Compose: Orchestrates all containers on a single Docker network (internal), handling ordered startup, healthchecks, and service discovery.
-  
+
+  Additional Datastores:
+ - Redis (caching JWT secrets)
+ - MySQL instances (one per service):
+
+   • banksphere_user  
+    • banksphere_account  
+    • banksphere_transaction
 
   ![system diagram](https://github.com/user-attachments/assets/fc4032be-5671-4392-acec-8aff0aaaa118)
 
@@ -52,14 +59,6 @@ How It Works
   Note: Logs are grouped by service.name, via defining each service's log folder as a seperate filebeat input on filebeat.yml file.
 
   ![Kibana](https://github.com/user-attachments/assets/2a5b1ca4-fa8d-48cb-9488-875970c29f2e)
-
-Additional Datastores:
- - Redis (caching JWT secrets)
- - MySQL instances (one per service):
-
-   • banksphere_user  
-    • banksphere_account  
-    • banksphere_transaction  
 
 
 Technologies
@@ -99,7 +98,3 @@ Technologies
   ElasticSearch 8.13.2
 
   Kibana 8.13.2
-  
-  
-
- 
